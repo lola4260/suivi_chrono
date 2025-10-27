@@ -26,7 +26,7 @@ class ButtonsPage {
             this.observationInfoDiv.innerHTML = `
                 <h2>Session d'observation en cours</h2>
                 <div class="info-details">
-                    <p><strong>Opérateur :</strong> ${this.observationInfo.examineeName}</p>
+                    <p><strong>Collaborateur :</strong> ${this.observationInfo.examineeName}</p>
                     <p><strong>Observateur :</strong> ${this.observationInfo.examinerName}</p>
                     <p><strong>Date :</strong> ${formattedDate}</p>
                 </div>
@@ -80,13 +80,11 @@ class ButtonsPage {
     }
 
     setupAddTaskButton() {
-        // Supprimer tous les gestionnaires d'événements existants
         const addTaskBtn = document.getElementById('addTaskBtn');
         const addTaskForm = document.getElementById('addTaskForm');
         const oldBtn = addTaskBtn.cloneNode(true);
         addTaskBtn.parentNode.replaceChild(oldBtn, addTaskBtn);
         
-        // Ajouter le nouveau gestionnaire d'événements
         oldBtn.onclick = (e) => {
             e.preventDefault();
             e.stopPropagation();
@@ -107,18 +105,15 @@ class ButtonsPage {
                 this.tasks.push(newTask);
                 Storage.set('tasks', this.tasks);
                 
-                // Réinitialiser le formulaire et fermer le modal
                 addTaskForm.reset();
                 document.getElementById('addTaskModal').style.display = 'none';
                 
-                // Nettoyer et recréer les boutons
                 this.buttonsGrid.innerHTML = '';
                 this.createTaskButtons();
                 return false;
             };
         }
 
-        // Gestion du bouton Annuler
         const cancelBtn = document.querySelector('#addTaskModal .cancel-btn');
         if (cancelBtn) {
             cancelBtn.onclick = (e) => {
@@ -129,7 +124,6 @@ class ButtonsPage {
             };
         }
 
-        // Gestion du bouton de fermeture (X)
         const closeBtn = document.querySelector('#addTaskModal .close-modal');
         if (closeBtn) {
             closeBtn.onclick = (e) => {

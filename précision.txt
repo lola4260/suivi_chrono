@@ -8,5 +8,15 @@ html to pwa
 libellé, description, icone, couleur, bouger les icones
 interface impactante et simple, coloré mais pas trop
 analyse des données ? faire un diagramme
-ajout identification -> opérateur qui suivi ?
+ajout identification -> Collaborateur qui suivi ?
 faire des camemberts pour exploiter des données(page avec les données un peu comme TDD), potentiellement un exel
+
+
+
+
+temps moyen par activité - gauss
+graphique ciruclaires avec répartition des activités
+Collaborateur Collaborateur
+aller voir stacey pour les chronos actuels
+
+passage c# (à voir)

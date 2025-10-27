@@ -7,6 +7,8 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="resume.css">
     <script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
 </head>
 <body>
     <div class="summary-container">
@@ -17,6 +19,30 @@
         </div>
         <div id="tasks-summary">
         </div>
+
+        <div class="charts-container">
+            <div class="chart-section">
+                <h2>Répartition du temps par activité</h2>
+                <div class="chart-wrapper">
+                    <canvas id="pieChart"></canvas>
+                </div>
+            </div>
+            
+            <div class="chart-section">
+                <h2>Temps moyen par activité</h2>
+                <div class="chart-wrapper">
+                    <canvas id="barChart"></canvas>
+                </div>
+            </div>
+
+            <div class="chart-section">
+                <h2>Distribution des temps (Courbe de Gauss)</h2>
+                <div class="chart-wrapper">
+                    <canvas id="gaussChart"></canvas>
+                </div>
+            </div>
+        </div>
+
         <div class="export-buttons">
             <button id="exportExcelButton" class="export-button">Exporter vers Excel</button>
         </div>

@@ -20,12 +20,10 @@ class Modal {
     }
 
     setupCloseEvents() {
-        // Fermer avec le bouton X
         if (this.closeBtn) {
             this.closeBtn.addEventListener('click', () => this.hide());
         }
 
-        // Fermer en cliquant en dehors du modal
         window.addEventListener('click', (event) => {
             if (event.target === this.modal) {
                 this.hide();
