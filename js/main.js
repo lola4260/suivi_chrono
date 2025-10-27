@@ -9,10 +9,10 @@ function formatDuration(duration) {
 
 function formatTime(timestamp) {
     const date = new Date(timestamp);
-    return date.toLocaleTimeString('fr-FR', { 
-        hour: '2-digit', 
-        minute: '2-digit', 
-        second: '2-digit' 
+    return date.toLocaleTimeString('fr-FR', {
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
     });
 }
 
