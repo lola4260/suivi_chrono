@@ -40,7 +40,6 @@ class SummaryPage {
     }
 
     createCharts() {
-        // Détection du mobile
         const isMobile = window.innerWidth <= 768;
         this.chartOptions = {
             responsive: true,
