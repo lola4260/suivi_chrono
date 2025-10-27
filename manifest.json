@@ -1,0 +1,14 @@
+{
+  "name": "Suivi Chrono",
+  "short_name": "Suivi",
+  "start_url": "html/formulaire.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#4CAF50",
+  "icons": [
+    { "src": "css/icons/icon-192.svg", "type": "image/svg+xml", "sizes": "192x192", "purpose": "any" },
+    { "src": "css/icons/icon-512.svg", "type": "image/svg+xml", "sizes": "512x512", "purpose": "any" }
+  ],
+  "orientation": "any",
+  "prefer_related_applications": false
+}

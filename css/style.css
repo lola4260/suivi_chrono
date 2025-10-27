@@ -8,19 +8,22 @@ body {
     min-height: 100vh;
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start;
     background-color: #f0f0f0;
     font-family: Arial, sans-serif;
-    padding: 20px;
+    padding: 10px;
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
 }
 
 .container {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 20px;
-    padding: 20px;
-    max-width: 800px;
-    width: 90%;
+    padding: 15px;
+    max-width: 1200px;
+    width: 100%;
+    margin: 0 auto;
 }
 
 .big-button {
@@ -46,24 +49,26 @@ body {
 
 .form-container {
     background-color: rgb(255, 255, 255);
-    padding: 30px;
+    padding: 20px;
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     width: 100%;
     max-width: 800px;
+    margin: 10px auto;
+    overflow-x: hidden;
 }
 
 .exam-info {
     background-color: #daeaf9;
-    padding: 20px;
+    padding: 15px;
     border-radius: 8px;
-    margin-bottom: 30px;
+    margin-bottom: 20px;
 }
 
 .info-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 15px;
 }
 
 select {
