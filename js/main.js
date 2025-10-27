@@ -12,7 +12,6 @@
  */
 
 /**
- * @namespace StorageCache
  * @brief Wrapper autour de localStorage avec cache en mémoire.
  */
 const StorageCache = {
