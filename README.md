@@ -1,72 +1,89 @@
-# Suivi Chrono - Guide d'installation
+# Suivi Chrono
 
-## Configuration requise
+Application web progressive (PWA) pour le suivi chronométré des tâches et activités. Permet de mesurer, analyser et exporter les durées des différentes activités d'un collaborateur.
 
-- Node.js 14+ et npm
-- Pour Android : Android Studio
-- Pour iOS : Xcode (Mac uniquement)
+## Fonctionnalités
 
-## Installation
+- Chronométrage précis des activités
+- Visualisation des statistiques (graphiques)
+- Export des données vers Excel
+- Installation sur mobile (PWA)
+- Fonctionne hors-ligne
+- Analyses statistiques détaillées
 
-1. Installer les dépendances :
-```bash
-npm install
-```
+## Installation sur Mobile
 
-2. Initialiser Capacitor :
-```bash
-npx cap init
-```
+### Pour iPhone (Safari)
 
-3. Ajouter les plateformes :
-```bash
-# Pour Android
-npx cap add android
+1. Ouvrez Safari sur votre iPhone
+2. Visitez : [https://lola4260.github.io/suivi_chrono/html/formulaire.html](https://lola4260.github.io/suivi_chrono/html/formulaire.html)
+3. Appuyez sur le bouton Partager
+4. Sélectionnez "Sur l'écran d'accueil"
+5. Donnez un nom à l'application (ex: "Suivi Chrono")
+6. Appuyez sur "Ajouter"
 
-# Pour iOS (Mac uniquement)
-npx cap add ios
-```
+### Pour Android (Chrome)
 
-## Développement local
+1. Ouvrez Chrome sur votre appareil Android
+2. Visitez : [https://lola4260.github.io/suivi_chrono/html/formulaire.html](https://lola4260.github.io/suivi_chrono/html/formulaire.html)
+3. Une bannière "Ajouter à l'écran d'accueil" apparaîtra automatiquement
+   - Si la bannière n'apparaît pas :
+   - Appuyez sur les trois points (⋮) en haut à droite
+   - Sélectionnez "Ajouter à l'écran d'accueil"
+4. Appuyez sur "Installer" ou "Ajouter"
 
-Pour tester l'application dans le navigateur :
-```bash
-npm start
-```
-Ouvrez http://localhost:8080/html/formulaire.html
+L'application est maintenant installée sur votre appareil et accessible depuis l'écran d'accueil !
 
-## Construction des applications natives
+## Utilisation sur Ordinateur
 
-### Android
-```bash
-npm run build:android
-```
-Cela ouvrira Android Studio. Cliquez sur "Run" pour compiler et lancer l'application.
+1. Ouvrez votre navigateur (Chrome, Edge, Safari, Firefox)
+2. Visitez : [https://lola4260.github.io/suivi_chrono/html/formulaire.html](https://lola4260.github.io/suivi_chrono/html/formulaire.html)
+3. Utilisez l'application directement dans votre navigateur
 
-### iOS (Mac uniquement)
-```bash
-npm run build:ios
-```
-Cela ouvrira Xcode. Cliquez sur "Play" pour compiler et lancer l'application.
+## Guide d'utilisation
 
-## Notes importantes
+### Configuration initiale
 
-- L'application utilise un service worker pour le fonctionnement hors ligne
-- Les icônes sont générées en SVG dans le dossier css/icons
-- L'interface s'adapte automatiquement aux différentes tailles d'écran
-- La mise en page est optimisée pour les interactions tactiles
+1. Remplissez les informations de l'observation :
+   - Nom du collaborateur observé
+   - Nom de l'observateur
+   - Date de l'observation
 
-## Sécurité
+2. Configurez les activités à suivre :
+   - Donnez un nom à chaque activité
+   - Ajoutez une description (optionnel)
+   - Choisissez une couleur pour le bouton
 
-Pour le déploiement en production :
-1. Utilisez HTTPS
-2. Configurez les en-têtes de sécurité appropriés
-3. Testez sur différents appareils avant le déploiement
+3. Validez pour passer au chronométrage
 
-## Mises à jour
+### Chronométrage
 
-Après modification du code web :
-```bash
-npm run copy
-npx cap sync
-```
+1. Appuyez sur un bouton d'activité pour démarrer le chronométrage
+2. Le chronomètre démarre automatiquement
+3. Appuyez sur une autre activité pour basculer
+4. Utilisez le bouton "Terminer la session" quand vous avez fini
+
+### Résumé et Export
+
+1. Consultez les graphiques de répartition du temps
+2. Analysez les statistiques détaillées
+3. Exportez les données vers Excel si nécessaire
+
+## Fonctionnalités analytiques
+
+- Distribution des temps par activité (graphique circulaire)
+- Temps moyen par activité (graphique en barres)
+- Distribution statistique (courbe de Gauss)
+- Export Excel avec feuilles multiples :
+  - Données brutes
+  - Statistiques détaillées
+  - Graphiques
+
+## Notes de version
+
+### Version 1.0.0
+- Interface responsive
+- Support PWA complet
+- Fonctionnement hors-ligne
+- Export Excel amélioré
+- Visualisations statistiques
