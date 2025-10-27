@@ -1,0 +1,12 @@
+'formulaire' pour créer les boutons -> ajout des tâches pour le nombre de boutons et ce qu'il y a écrit sur les boutons
+(pouvoir perso les boutons)
+utilisateur est créateur (grâce au formulaire)
+serveur possible ?
+bouton + pour potentiellement ajouter des tâches même après avoir rempli le formulaire d'ajout des tâches
+html to pwa
+
+libellé, description, icone, couleur, bouger les icones
+interface impactante et simple, coloré mais pas trop
+analyse des données ? faire un diagramme
+ajout identification -> opérateur qui suivi ?
+faire des camemberts pour exploiter des données(page avec les données un peu comme TDD), potentiellement un exel

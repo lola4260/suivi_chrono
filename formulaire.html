@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suivi des opérateurs</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="formulaire.css">
+</head>
+
+<body>
+    <div class="form-container">
+        <h1>Configuration du suivi opérateur</h1>
+        <form id="taskForm">
+            <!-- Section informations d'examen -->
+            <div class="exam-info">
+                <h2>Informations de l'observation</h2>
+                <div class="info-grid">
+                    <div class="form-group">
+                        <label for="examineeName">Opérateur observé :</label>
+                        <input type="text" id="examineeName" name="examineeName" required
+                            placeholder="Nom de l'opérateur">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="examinerName">Observateur :</label>
+                        <input type="text" id="examinerName" name="examinerName" required
+                            placeholder="Nom de l'observateur">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="examDate">Date :</label>
+                        <input type="date" id="examDate" name="examDate" required>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section informations des tâches -->
+            <div class="section-divider"></div>
+            <h2>Configuration des activités</h2>
+            <div class="form-group">
+                <label for="taskTitle">Nom de l'activité :</label>
+                <input type="text" id="taskTitle" name="taskTitle" required>
+            </div>
+
+            <div class="form-group">
+                <label for="taskDescription">Description de l'activité :</label>
+                <textarea id="taskDescription" name="taskDescription" rows="3"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="buttonColor">Couleur du bouton :</label>
+                <div class="color-picker-container">
+                    <input type="color" id="buttonColor" name="buttonColor" value="#4CAF50">
+                    <input type="text" id="colorHex" name="colorHex" placeholder="#4CAF50" readonly>
+                </div>
+            </div>
+
+            <button type="submit" class="submit-button">Ajouter la tâche</button>
+        </form>
+
+        <div id="taskList">
+            <h2>Liste des tâches configurées</h2>
+            <div class="tasks-container">
+            </div>
+        </div>
+
+        <div id="validationSection" class="validation-section">
+                <button id="validateButton" type="button" class="validate-button">Valider et passer au chronométrage</button>
+        </div>
+    </div>
+    <script src="main.js"></script>
+    <script src="formulaire.js"></script>
+</body>
+
+</html>

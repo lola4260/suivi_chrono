@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suivi des opérateurs - Chronométrage</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="buttons.css">
+</head>
+<body>
+    <div class="buttons-container">
+        <div id="observation-info" class="observation-header">
+        </div>
+        <div id="chrono-display" class="chrono-section">
+            <div class="chrono-display">00:00:00.00</div>
+        </div>
+        <div id="buttons-grid" class="buttons-grid">
+        </div>
+        <div class="end-session-container">
+            <button id="endSessionBtn" class="end-session-button">Terminer la session</button>
+        </div>
+        <div class="add-task-container">
+            <button id="addTaskBtn" class="add-task-button">Ajouter une nouvelle tâche</button>
+        </div>
+    </div>
+    
+    <div id="descriptionModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2 id="modalTitle"></h2>
+            <p id="modalDescription"></p>
+        </div>
+    </div>
+
+    <script src="main.js"></script>
+    <script src="chrono.js"></script>
+    <script src="buttons.js"></script>
+</body>
+</html>
