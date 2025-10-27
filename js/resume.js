@@ -40,6 +40,30 @@ class SummaryPage {
     }
 
     createCharts() {
+        // Détection du mobile
+        const isMobile = window.innerWidth <= 768;
+        this.chartOptions = {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: isMobile ? 'bottom' : 'right',
+                    labels: {
+                        boxWidth: isMobile ? 15 : 40,
+                        padding: isMobile ? 10 : 20,
+                        font: {
+                            size: isMobile ? 12 : 14
+                        }
+                    }
+                },
+                datalabels: {
+                    font: {
+                        size: isMobile ? 10 : 12
+                    }
+                }
+            }
+        };
+
         this.createPieChart();
         this.createBarChart();
         this.createGaussChart();
