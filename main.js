@@ -31,31 +31,6 @@ const Storage = {
     }
 };
 
-class Modal {
-    constructor(modalId) {
-        this.modal = document.getElementById(modalId);
-        this.closeBtn = this.modal.querySelector('.close-modal');
-        this.setupEventListeners();
-    }
-
-    setupEventListeners() {
-        this.closeBtn.onclick = () => this.hide();
-        window.onclick = (event) => {
-            if (event.target == this.modal) {
-                this.hide();
-            }
-        };
-    }
-
-    show() {
-        this.modal.style.display = 'block';
-    }
-
-    hide() {
-        this.modal.style.display = 'none';
-    }
-}
-
 function validateForm(formElement) {
     let isValid = true;
     const requiredFields = formElement.querySelectorAll('[required]');

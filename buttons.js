@@ -9,7 +9,8 @@ class ButtonsPage {
     initializeElements() {
         this.buttonsGrid = document.getElementById('buttons-grid');
         this.observationInfoDiv = document.getElementById('observation-info');
-        this.modal = new Modal('descriptionModal');
+        this.descriptionModal = new Modal('descriptionModal');
+        this.addTaskModal = new Modal('addTaskModal');
     }
 
     setupPage() {
@@ -63,7 +64,7 @@ class ButtonsPage {
     showDescription(title, description) {
         document.getElementById('modalTitle').textContent = title;
         document.getElementById('modalDescription').textContent = description || 'Aucune description disponible';
-        this.modal.show();
+        this.descriptionModal.show();
     }
 
     setupEndSessionButton() {
@@ -79,14 +80,63 @@ class ButtonsPage {
     }
 
     setupAddTaskButton() {
+        // Supprimer tous les gestionnaires d'événements existants
         const addTaskBtn = document.getElementById('addTaskBtn');
-        if (addTaskBtn) {
-            addTaskBtn.addEventListener('click', () => {
-                if (chronometer.isRunning) {
-                    chronometer.stop();
-                }
-                window.location.href = 'add_task.html';
-            });
+        const addTaskForm = document.getElementById('addTaskForm');
+        const oldBtn = addTaskBtn.cloneNode(true);
+        addTaskBtn.parentNode.replaceChild(oldBtn, addTaskBtn);
+        
+        // Ajouter le nouveau gestionnaire d'événements
+        oldBtn.onclick = (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            document.getElementById('addTaskModal').style.display = 'block';
+            return false;
+        };
+
+        if (addTaskForm) {
+            addTaskForm.onsubmit = (e) => {
+                e.preventDefault();
+                const newTask = {
+                    id: Date.now().toString(),
+                    title: document.getElementById('taskTitle').value,
+                    description: document.getElementById('taskDescription').value,
+                    color: document.getElementById('taskColor').value
+                };
+                
+                this.tasks.push(newTask);
+                Storage.set('tasks', this.tasks);
+                
+                // Réinitialiser le formulaire et fermer le modal
+                addTaskForm.reset();
+                document.getElementById('addTaskModal').style.display = 'none';
+                
+                // Nettoyer et recréer les boutons
+                this.buttonsGrid.innerHTML = '';
+                this.createTaskButtons();
+                return false;
+            };
+        }
+
+        // Gestion du bouton Annuler
+        const cancelBtn = document.querySelector('#addTaskModal .cancel-btn');
+        if (cancelBtn) {
+            cancelBtn.onclick = (e) => {
+                e.preventDefault();
+                addTaskForm.reset();
+                document.getElementById('addTaskModal').style.display = 'none';
+                return false;
+            };
+        }
+
+        // Gestion du bouton de fermeture (X)
+        const closeBtn = document.querySelector('#addTaskModal .close-modal');
+        if (closeBtn) {
+            closeBtn.onclick = (e) => {
+                e.preventDefault();
+                document.getElementById('addTaskModal').style.display = 'none';
+                return false;
+            };
         }
     }
 }
