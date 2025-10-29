@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Résumé de la session</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/resume.css">
+    <script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+    <link rel="manifest" href="../manifest.json">
+    <meta name="theme-color" content="#4CAF50">
+</head>
+<body>
+    <div class="summary-container">
+        <div class="summary-header">
+            <h1>Résumé de la session d'observation</h1>
+            <div id="session-info">
+            </div>
+        </div>
+        <div id="tasks-summary">
+        </div>
+
+        <div class="charts-container">
+            <div class="chart-section">
+                <h2>Répartition du temps par activité</h2>
+                <div class="chart-wrapper">
+                    <canvas id="pieChart"></canvas>
+                </div>
+            </div>
+            
+            <div class="chart-section">
+                <h2>Temps moyen par activité</h2>
+                <div class="chart-wrapper">
+                    <canvas id="barChart"></canvas>
+                </div>
+            </div>
+
+            <div class="chart-section">
+                <h2>Distribution des temps (Courbe de Gauss)</h2>
+                <div class="chart-wrapper">
+                    <canvas id="gaussChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="export-buttons">
+            <button id="exportExcelButton" class="export-button">Exporter vers Excel</button>
+        </div>
+    </div>
+
+    <script src="../js/main.js"></script>
+    <script src="../js/resume.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('../js/service-worker.js')
+                .then(reg => console.log('Service Worker registered', reg))
+                .catch(err => console.warn('Service Worker registration failed', err));
+        }
+    </script>
+</body>
+</html>

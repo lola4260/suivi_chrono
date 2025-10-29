@@ -8,19 +8,22 @@ body {
     min-height: 100vh;
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start;
     background-color: #f0f0f0;
     font-family: Arial, sans-serif;
-    padding: 20px;
+    padding: 10px;
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
 }
 
 .container {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 20px;
-    padding: 20px;
-    max-width: 800px;
-    width: 90%;
+    padding: 15px;
+    max-width: 1200px;
+    width: 100%;
+    margin: 0 auto;
 }
 
 .big-button {
@@ -45,25 +48,27 @@ body {
 }
 
 .form-container {
-    background-color: white;
-    padding: 30px;
+    background-color: rgb(255, 255, 255);
+    padding: 20px;
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     width: 100%;
     max-width: 800px;
+    margin: 10px auto;
+    overflow-x: hidden;
 }
 
 .exam-info {
-    background-color: #f8f9fa;
-    padding: 20px;
+    background-color: #daeaf9;
+    padding: 15px;
     border-radius: 8px;
-    margin-bottom: 30px;
+    margin-bottom: 20px;
 }
 
 .info-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 15px;
 }
 
 select {
@@ -90,12 +95,104 @@ select {
 }
 
 .form-container h2 {
-    margin: 20px 0;
+    margin: 20px;
     color: #333;
 }
 
 .form-group {
     margin-bottom: 20px;
+    margin: 20px;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+    background-color: white;
+    margin: 10% auto;
+    padding: 20px;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 500px;
+    position: relative;
+}
+
+.close-modal {
+    position: absolute;
+    right: 15px;
+    top: 10px;
+    font-size: 24px;
+    cursor: pointer;
+    color: #666;
+}
+
+.close-modal:hover {
+    color: #333;
+}
+
+.modal .form-group {
+    margin-bottom: 15px;
+}
+
+.modal label {
+    display: block;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+.modal input[type="text"],
+.modal textarea {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.modal input[type="color"] {
+    padding: 2px;
+    width: 60px;
+    height: 30px;
+}
+
+.form-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 20px;
+}
+
+.submit-btn,
+.cancel-btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.submit-btn {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.cancel-btn {
+    background-color: #dc3545;
+    color: white;
+}
+
+.submit-btn:hover {
+    background-color: #45a049;
+}
+
+.cancel-btn:hover {
+    background-color: #c82333;
 }
 
 .form-group label {

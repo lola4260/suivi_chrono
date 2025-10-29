@@ -1,0 +1,20 @@
+{
+  "name": "suivi-chrono",
+  "version": "1.0.0",
+  "description": "Application de suivi chronométré des tâches",
+  "scripts": {
+    "start": "http-server -c-1",
+    "build:android": "npm run copy && npx cap sync android && npx cap open android",
+    "build:ios": "npm run copy && npx cap sync ios && npx cap open ios",
+    "copy": "mkdir -p www && cp -r css html js manifest.json www/"
+  },
+  "dependencies": {
+    "@capacitor/android": "^5.0.0",
+    "@capacitor/core": "^5.0.0",
+    "@capacitor/ios": "^5.0.0"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^5.0.0",
+    "http-server": "^14.1.1"
+  }
+}

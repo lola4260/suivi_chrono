@@ -4,23 +4,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Suivi des opérateurs</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="formulaire.css">
+    <title>Suivi des Collaborateurs</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/formulaire.css">
+    <link rel="manifest" href="../manifest.json">
+    <meta name="theme-color" content="#4CAF50">
 </head>
 
 <body>
     <div class="form-container">
-        <h1>Configuration du suivi opérateur</h1>
+        <h1>Configuration du suivi du collaborateur</h1>
         <form id="taskForm">
             <!-- Section informations d'examen -->
             <div class="exam-info">
                 <h2>Informations de l'observation</h2>
                 <div class="info-grid">
                     <div class="form-group">
-                        <label for="examineeName">Opérateur observé :</label>
+                        <label for="examineeName">Collaborateur observé :</label>
                         <input type="text" id="examineeName" name="examineeName" required
-                            placeholder="Nom de l'opérateur">
+                            placeholder="Nom du collaborateur">
                     </div>
 
                     <div class="form-group">
@@ -70,8 +72,15 @@
                 <button id="validateButton" type="button" class="validate-button">Valider et passer au chronométrage</button>
         </div>
     </div>
-    <script src="main.js"></script>
-    <script src="formulaire.js"></script>
+    <script src="../js/main.js"></script>
+    <script src="../js/formulaire.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('../js/service-worker.js')
+                .then(reg => console.log('Service Worker registered', reg))
+                .catch(err => console.warn('Service Worker registration failed', err));
+        }
+    </script>
 </body>
 
 </html>
