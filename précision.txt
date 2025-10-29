@@ -16,7 +16,6 @@ faire des camemberts pour exploiter des données(page avec les données un peu c
 
 temps moyen par activité - gauss
 graphique ciruclaires avec répartition des activités
-Collaborateur Collaborateur
-aller voir stacey pour les chronos actuels
+aller voir stacy pour les chronos actuels
 
 passage c# (à voir)
