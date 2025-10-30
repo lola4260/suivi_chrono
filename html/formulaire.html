@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="fr">
-
+<!--Métadonnées et ressources externes-->
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,9 +13,10 @@
 
 <body>
     <div class="form-container">
+        <!--Section formulaire principal de configuration-->
         <h1>Configuration du suivi du collaborateur</h1>
         <form id="taskForm">
-            <!-- Section informations d'examen -->
+            <!-- Subsection informations d'observation -->
             <div class="exam-info">
                 <h2>Informations de l'observation</h2>
                 <div class="info-grid">
@@ -38,7 +39,7 @@
                 </div>
             </div>
 
-            <!-- Section informations des tâches -->
+            <!-- Subsection informations des tâches -->
             <div class="section-divider"></div>
             <h2>Configuration des activités</h2>
             <div class="form-group">
@@ -62,16 +63,19 @@
             <button type="submit" class="submit-button">Ajouter la tâche</button>
         </form>
 
+        <!--Affichage dynamique des tâches configurées-->
         <div id="taskList">
             <h2>Liste des tâches configurées</h2>
             <div class="tasks-container">
             </div>
         </div>
-
+        <!--Bouton de validation pour passer à l'étape de chronométrage-->
         <div id="validationSection" class="validation-section">
                 <button id="validateButton" type="button" class="validate-button">Valider et passer au chronométrage</button>
         </div>
     </div>
+
+    <!--Inclusion des scripts JavaScript-->
     <script src="../js/main.js"></script>
     <script src="../js/formulaire.js"></script>
     <script>

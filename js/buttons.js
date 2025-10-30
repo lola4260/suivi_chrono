@@ -1,11 +1,38 @@
+/**
+ * @file buttons.js
+ * @brief Gère la page des boutons de tâches pour la session d'observation.
+ *
+ * Ce module affiche les informations de la session en cours, génère dynamiquement
+ * les boutons des tâches, et permet d'ajouter ou de terminer une session.
+ *
+ * Il interagit avec :
+ * - `Storage` : pour la persistance des données (`tasks`, `observationInfo`).
+ * - `Modal` : pour l'affichage des fenêtres modales (description, ajout de tâche).
+ * - `chronometer` : pour le suivi du temps des tâches sélectionnées.
+ *
+ * @date 2025-10-09
+ * @author Lola Gauducheau
+ */
+
+/**
+ * @class ButtonsPage
+ * @brief Classe principale gérant la logique de la page des boutons.
+ */
 class ButtonsPage {
+    /**
+     * @brief Initialise la page et charge les données sauvegardées.
+     */
     constructor() {
         this.tasks = Storage.get('tasks') || [];
         this.observationInfo = Storage.get('observationInfo');
+
         this.initializeElements();
         this.setupPage();
     }
 
+    /**
+     * @brief Initialise les éléments DOM et les modales.
+     */
     initializeElements() {
         this.buttonsGrid = document.getElementById('buttons-grid');
         this.observationInfoDiv = document.getElementById('observation-info');
@@ -13,6 +40,9 @@ class ButtonsPage {
         this.addTaskModal = new Modal('addTaskModal');
     }
 
+    /**
+     * @brief Configure la page principale.
+     */
     setupPage() {
         this.displayObservationInfo();
         this.createTaskButtons();
@@ -20,6 +50,9 @@ class ButtonsPage {
         this.setupAddTaskButton();
     }
 
+    /**
+     * @brief Affiche les informations de la session d'observation en cours.
+     */
     displayObservationInfo() {
         if (this.observationInfo) {
             const formattedDate = new Date(this.observationInfo.examDate).toLocaleDateString('fr-FR');
@@ -34,6 +67,9 @@ class ButtonsPage {
         }
     }
 
+    /**
+     * @brief Crée dynamiquement les boutons de tâches.
+     */
     createTaskButtons() {
         if (this.tasks && this.tasks.length > 0) {
             this.tasks.forEach(task => {
@@ -61,12 +97,20 @@ class ButtonsPage {
         }
     }
 
+    /**
+     * @brief Affiche la description d'une tâche dans une fenêtre modale.
+     * @param {string} title - Titre de la tâche.
+     * @param {string} description - Description de la tâche.
+     */
     showDescription(title, description) {
         document.getElementById('modalTitle').textContent = title;
         document.getElementById('modalDescription').textContent = description || 'Aucune description disponible';
         this.descriptionModal.show();
     }
 
+    /**
+     * @brief Configure le bouton de fin de session.
+     */
     setupEndSessionButton() {
         const endSessionBtn = document.getElementById('endSessionBtn');
         if (endSessionBtn) {
@@ -79,6 +123,9 @@ class ButtonsPage {
         }
     }
 
+    /**
+     * @brief Configure le bouton et la modale d'ajout de nouvelle tâche.
+     */
     setupAddTaskButton() {
         const addTaskBtn = document.getElementById('addTaskBtn');
         const addTaskForm = document.getElementById('addTaskForm');
@@ -135,6 +182,9 @@ class ButtonsPage {
     }
 }
 
+/**
+ * @brief Initialise la page des boutons une fois le DOM chargé.
+ */
 document.addEventListener('DOMContentLoaded', () => {
     new ButtonsPage();
 });

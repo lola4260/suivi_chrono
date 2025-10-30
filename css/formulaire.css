@@ -1,3 +1,17 @@
+/**
+ * @file formulaire.css
+ * @brief Feuille de style du formulaire principal.
+ *
+ * Ce fichier définit la mise en page et le style des formulaires d'information :
+ * conteneur principal, champs de saisie, grilles d'informations, et adaptation mobile.
+ *
+ * @date 2025-10-09
+ * @author Lola Gauducheau
+ */
+
+/**
+ * @section form-container Conteneur du formulaire
+ */
 .form-container {
     max-width: 800px;
     margin: 0 auto;
@@ -6,12 +20,18 @@
     margin-top: 20px;
 }
 
+/**
+ * @section form-title Titre du formulaire
+ */
 .form-container h1 {
     margin-bottom: 25px;
     font-size: clamp(1.5rem, 4vw, 2rem);
     color: #333;
 }
 
+/**
+ * @section info-grid Grille d'informations
+ */
 .info-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -19,6 +39,9 @@
     margin-bottom: 30px;
 }
 
+/**
+ * @section form-group Groupes de champs
+ */
 .form-group {
     display: flex;
     flex-direction: column;
@@ -26,12 +49,18 @@
     position: relative;
 }
 
+/**
+ * @section form-label Label du champ
+ */
 .form-group label {
     margin-bottom: 8px;
     color: #333;
     font-weight: 500;
 }
 
+/**
+ * @section form-input Champs de saisie texte et date
+ */
 .form-group input[type="text"],
 .form-group input[type="date"] {
     width: 100%;
@@ -45,12 +74,18 @@
     transition: border-color 0.3s ease;
 }
 
+/**
+ * @subsection form-input-date Spécificité pour le champ de date
+ */
 .form-group input[type="date"] {
     padding-right: 10px;
     min-height: 42px;
     line-height: 42px;
 }
 
+/**
+ * @subsection form-input-focus Effet au focus
+ */
 .form-group input[type="text"]:focus,
 .form-group input[type="date"]:focus {
     outline: none;
@@ -58,19 +93,25 @@
     box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.1);
 }
 
+/**
+ * @subsection form-input-date-reset Réinitialisation du style natif
+ */
 .form-group input[type="date"] {
     -webkit-appearance: none;
     appearance: none;
     background: white;
 }
 
+/**
+ * @section responsive Adaptation mobile
+ */
 @media (max-width: 768px) {
     .form-container {
         padding: 15px;
         padding-top: env(safe-area-inset-top, 30px);
         margin-top: 30px;
     }
-    
+
     .info-grid {
         grid-template-columns: 1fr;
         gap: 15px;

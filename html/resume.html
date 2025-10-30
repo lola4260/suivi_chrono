@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="fr">
+<!--Métadonnées et ressources externes-->
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,14 +15,18 @@
 </head>
 <body>
     <div class="summary-container">
+        <!--Section conteneur principal du résumé de session-->
+        <!--Subsection informations générales-->
         <div class="summary-header">
             <h1>Résumé de la session d'observation</h1>
             <div id="session-info">
             </div>
         </div>
+        <!--Subsection résumé des tâches-->
         <div id="tasks-summary">
         </div>
-
+        
+        <!--Visualisation des données sous forme de graphiques-->
         <div class="charts-container">
             <div class="chart-section">
                 <h2>Répartition du temps par activité</h2>
@@ -45,11 +50,13 @@
             </div>
         </div>
 
+        <!--Bouton d'exportation des données vers Excel-->
         <div class="export-buttons">
             <button id="exportExcelButton" class="export-button">Exporter vers Excel</button>
         </div>
     </div>
 
+    <!--Inclusion des scripts JavaScript-->
     <script src="../js/main.js"></script>
     <script src="../js/resume.js"></script>
     <script>

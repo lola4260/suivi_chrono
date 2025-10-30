@@ -1,9 +1,27 @@
+/**
+ * @file main.css
+ * @brief Feuille de style principale de l'application.
+ *
+ * Ce fichier définit la structure globale, les boutons d'action,
+ * les formulaires, les modales, les tâches, et leurs animations.
+ * Il inclut aussi la gestion du sélecteur de couleur et de la validation.
+ *
+ * @date 2025-10-09
+ * @author Lola Gauducheau
+ */
+
+/**
+ * @section global-reset Réinitialisation globale
+ */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
+/**
+ * @section body Corps de la page
+ */
 body {
     min-height: 100vh;
     display: flex;
@@ -16,6 +34,9 @@ body {
     padding-bottom: env(safe-area-inset-bottom);
 }
 
+/**
+ * @section container Grille principale
+ */
 .container {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -26,6 +47,9 @@ body {
     margin: 0 auto;
 }
 
+/**
+ * @section big-button Boutons principaux
+ */
 .big-button {
     padding: 40px;
     font-size: 24px;
@@ -47,8 +71,11 @@ body {
     transform: scale(0.95);
 }
 
+/**
+ * @section form-container Conteneur de formulaire
+ */
 .form-container {
-    background-color: rgb(255, 255, 255);
+    background-color: #fff;
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -58,6 +85,9 @@ body {
     overflow-x: hidden;
 }
 
+/**
+ * @section exam-info Informations d'examen
+ */
 .exam-info {
     background-color: #daeaf9;
     padding: 15px;
@@ -65,12 +95,18 @@ body {
     margin-bottom: 20px;
 }
 
+/**
+ * @section info-grid Grille d'informations
+ */
 .info-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 15px;
 }
 
+/**
+ * @section select Champs de sélection personnalisés
+ */
 select {
     appearance: none;
     background-color: white;
@@ -81,6 +117,9 @@ select {
     padding-right: 2.5em;
 }
 
+/**
+ * @section section-divider Séparateur visuel
+ */
 .section-divider {
     height: 2px;
     background-color: #e9ecef;
@@ -88,6 +127,9 @@ select {
     width: 100%;
 }
 
+/**
+ * @section form-headings Titres des formulaires
+ */
 .form-container h1 {
     margin-bottom: 20px;
     color: #333;
@@ -99,11 +141,16 @@ select {
     color: #333;
 }
 
+/**
+ * @section form-group Groupes de champs
+ */
 .form-group {
-    margin-bottom: 20px;
     margin: 20px;
 }
 
+/**
+ * @section modal Fenêtre modale
+ */
 .modal {
     display: none;
     position: fixed;
@@ -133,21 +180,21 @@ select {
     cursor: pointer;
     color: #666;
 }
-
 .close-modal:hover {
     color: #333;
 }
 
+/**
+ * @section modal-form Formulaire interne à la modale
+ */
 .modal .form-group {
     margin-bottom: 15px;
 }
-
 .modal label {
     display: block;
     margin-bottom: 5px;
     color: #333;
 }
-
 .modal input[type="text"],
 .modal textarea {
     width: 100%;
@@ -155,13 +202,15 @@ select {
     border: 1px solid #ddd;
     border-radius: 4px;
 }
-
 .modal input[type="color"] {
     padding: 2px;
     width: 60px;
     height: 30px;
 }
 
+/**
+ * @section form-actions Actions de formulaire
+ */
 .form-actions {
     display: flex;
     gap: 10px;
@@ -181,7 +230,6 @@ select {
     background-color: #4CAF50;
     color: white;
 }
-
 .cancel-btn {
     background-color: #dc3545;
     color: white;
@@ -190,11 +238,13 @@ select {
 .submit-btn:hover {
     background-color: #45a049;
 }
-
 .cancel-btn:hover {
     background-color: #c82333;
 }
 
+/**
+ * @section form-fields Champs généraux du formulaire
+ */
 .form-group label {
     display: block;
     margin-bottom: 5px;
@@ -216,6 +266,9 @@ select {
     resize: vertical;
 }
 
+/**
+ * @section submit-button Bouton principal de soumission
+ */
 .submit-button {
     background-color: #4CAF50;
     color: white;
@@ -227,11 +280,13 @@ select {
     font-size: 16px;
     transition: background-color 0.3s;
 }
-
 .submit-button:hover {
     background-color: #45a049;
 }
 
+/**
+ * @section validation-section Validation finale
+ */
 .validation-section {
     margin-top: 30px;
     text-align: center;
@@ -252,16 +307,17 @@ select {
     display: block;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
-
 .validate-button:hover {
     background-color: #1976D2;
     transform: translateY(-2px);
 }
-
 .validate-button:active {
     transform: translateY(0);
 }
 
+/**
+ * @section color-picker Sélecteur de couleur
+ */
 .color-picker-container {
     display: flex;
     align-items: center;
@@ -287,11 +343,9 @@ input[type="color"] {
     border-radius: 8px;
     cursor: pointer;
 }
-
 input[type="color"]::-webkit-color-swatch-wrapper {
     padding: 0;
 }
-
 input[type="color"]::-webkit-color-swatch {
     border: none;
     border-radius: 8px;
@@ -308,6 +362,9 @@ input[type="color"]::-webkit-color-swatch {
     background-color: #f8f9fa;
 }
 
+/**
+ * @section tasks Gestion des tâches
+ */
 #taskList {
     margin-top: 30px;
     border-top: 1px solid #ddd;
@@ -326,8 +383,8 @@ input[type="color"]::-webkit-color-swatch {
     overflow: hidden;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     transition: transform 0.2s;
+    animation: fadeIn 0.3s ease;
 }
-
 .task-item:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
@@ -340,7 +397,6 @@ input[type="color"]::-webkit-color-swatch {
     align-items: center;
     color: white;
 }
-
 .task-header h3 {
     margin: 0;
     font-size: 18px;
@@ -351,7 +407,6 @@ input[type="color"]::-webkit-color-swatch {
     padding: 15px 20px;
     background: white;
 }
-
 .task-body p {
     margin: 0;
     color: #666;
@@ -367,33 +422,13 @@ input[type="color"]::-webkit-color-swatch {
     opacity: 0.8;
     transition: opacity 0.2s;
 }
-
 .delete-task:hover {
     opacity: 1;
 }
 
-.modal {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0,0,0,0.5);
-    z-index: 1000;
-}
-
-.modal-content {
-    position: relative;
-    background-color: white;
-    margin: 15% auto;
-    padding: 20px;
-    border-radius: 10px;
-    width: 80%;
-    max-width: 500px;
-    animation: modalFadeIn 0.3s;
-}
-
+/**
+ * @section animations Animations visuelles
+ */
 @keyframes modalFadeIn {
     from {
         opacity: 0;
@@ -405,20 +440,6 @@ input[type="color"]::-webkit-color-swatch {
     }
 }
 
-.close-modal {
-    position: absolute;
-    right: 20px;
-    top: 10px;
-    font-size: 28px;
-    font-weight: bold;
-    color: #666;
-    cursor: pointer;
-}
-
-.close-modal:hover {
-    color: #333;
-}
-
 @keyframes fadeOut {
     from {
         opacity: 1;
@@ -428,10 +449,6 @@ input[type="color"]::-webkit-color-swatch {
         opacity: 0;
         transform: scale(0.9);
     }
-}
-
-.task-item {
-    animation: fadeIn 0.3s ease;
 }
 
 @keyframes fadeIn {

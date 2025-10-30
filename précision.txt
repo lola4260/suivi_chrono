@@ -19,3 +19,7 @@ graphique ciruclaires avec répartition des activités
 aller voir stacy pour les chronos actuels
 
 passage c# (à voir)
+
+ajouter un bouton pour dire si c'est valeur ajouté (VA) ou non valeur ajouté (NVA)
+ajouter un bouton pour commenter la tâche en cours
+adapter le rendu exel avec le exel envoyé par stacy

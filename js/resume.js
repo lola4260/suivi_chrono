@@ -1,4 +1,23 @@
+/**
+ * @file resume.js
+ * @brief Gestion de la page de synthèse des observations et génération des graphiques/excel.
+ *
+ * Cette classe récupère les données stockées, calcule les statistiques,
+ * affiche les informations sur la session et les tâches, génère des graphiques
+ * (camembert, barre, courbe de Gauss) et permet l'export Excel.
+ *
+ * @date 2025-10-09
+ * @author Lola Gauducheau
+ */
+
+/**
+ * @class SummaryPage
+ * @brief Représente la page de synthèse des observations.
+ */
 class SummaryPage {
+    /**
+     * @brief Constructeur de la classe SummaryPage.
+     */
     constructor() {
         this.observationInfo = Storage.get('observationInfo');
         this.tasks = Storage.get('tasks');
@@ -8,6 +27,12 @@ class SummaryPage {
         this.createCharts();
     }
 
+    /**
+     * @brief Calcule les données d'une distribution gaussienne normalisée pour un ensemble de durées.
+     * @param {Array<number>} data Tableau des durées en millisecondes.
+     * @param {number} points Nombre de points à générer pour la courbe.
+     * @return {Array<{x:number, y:number}>} Tableau des points {x, y} normalisés.
+     */
     calculateGaussianData(data, points = 50) {
         console.log('Calculating Gaussian data for:', data);
         const mean = data.reduce((a, b) => a + b, 0) / data.length;
@@ -39,6 +64,9 @@ class SummaryPage {
         return gaussianData;
     }
 
+    /**
+     * @brief Crée tous les graphiques de la page.
+     */
     createCharts() {
         const isMobile = window.innerWidth <= 768;
         this.chartOptions = {
@@ -68,6 +96,9 @@ class SummaryPage {
         this.createGaussChart();
     }
 
+    /**
+     * @brief Crée un graphique en camembert représentant la répartition des temps par tâche.
+     */
     createPieChart() {
         const ctx = document.getElementById('pieChart').getContext('2d');
         const data = Object.values(this.taskSummaries).map(summary => ({
@@ -105,6 +136,9 @@ class SummaryPage {
         });
     }
 
+    /**
+     * @brief Crée un graphique en barres des temps moyens par tâche.
+     */
     createBarChart() {
         const ctx = document.getElementById('barChart').getContext('2d');
         const data = Object.values(this.taskSummaries).map(summary => ({
@@ -148,6 +182,9 @@ class SummaryPage {
         });
     }
 
+    /**
+     * @brief Crée une courbe de Gauss pour chaque tâche ayant au moins 2 mesures.
+     */
     createGaussChart() {
         const ctx = document.getElementById('gaussChart').getContext('2d');
         console.log('Creating Gauss chart');
@@ -231,6 +268,9 @@ class SummaryPage {
         }
     }
 
+    /**
+     * @brief Initialise la page en préparant les résumés et affichant les informations.
+     */
     initializePage() {
         this.prepareSummaries();
         this.displaySessionInfo();
@@ -238,6 +278,9 @@ class SummaryPage {
         this.setupExportButtons();
     }
 
+     /**
+     * @brief Prépare les résumés des tâches à partir des données et de l'historique.
+     */
     prepareSummaries() {
         this.tasks.forEach(task => {
             this.taskSummaries[task.id] = {
@@ -255,6 +298,9 @@ class SummaryPage {
         });
     }
 
+    /**
+     * @brief Affiche les informations de la session (collaborateur, observateur, date).
+     */
     displaySessionInfo() {
         if (this.observationInfo) {
             const formattedDate = new Date(this.observationInfo.examDate).toLocaleDateString('fr-FR');
@@ -266,6 +312,9 @@ class SummaryPage {
         }
     }
 
+    /**
+     * @brief Affiche le résumé des tâches avec détails et temps total.
+     */
     displayTasksSummary() {
         const tasksSummaryDiv = document.getElementById('tasks-summary');
         Object.values(this.taskSummaries).forEach(summary => {
@@ -296,10 +345,16 @@ class SummaryPage {
         });
     }
 
+    /**
+     * @brief Configure le bouton d'export Excel.
+     */
     setupExportButtons() {
         document.getElementById('exportExcelButton').addEventListener('click', () => this.exportToExcel());
     }
 
+    /**
+     * @brief Exporte les données de la session et des tâches au format Excel.
+     */
     exportToExcel() {
         const wb = XLSX.utils.book_new();
         
@@ -407,6 +462,9 @@ class SummaryPage {
     }
 }
 
+/**
+ * @brief Initialise la page SummaryPage après le chargement du DOM.
+ */
 document.addEventListener('DOMContentLoaded', () => {
     new SummaryPage();
 });
