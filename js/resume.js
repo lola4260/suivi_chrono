@@ -20,7 +20,7 @@ class SummaryPage {
      */
     constructor() {
         this.observationInfo = Storage.get('observationInfo');
-        this.tasks = Storage.get('tasks');
+        this.tasks = Storage.get('tasks') || [];
         this.timeHistory = Storage.get('timeHistory') || [];
         this.taskSummaries = {};
         this.initializePage();
@@ -91,9 +91,80 @@ class SummaryPage {
             }
         };
 
+        // Crée le diagramme VA/NVA (répartition par classification)
+        this.createVaNvaChart();
         this.createPieChart();
         this.createBarChart();
         this.createGaussChart();
+    }
+
+    /**
+     * @brief Calcule les temps totaux VA / NVA / Non classé.
+     * @returns {{vaTime:number, nvaTime:number, unclassifiedTime:number}}
+     */
+    getVaNvaTotals() {
+        let vaTime = 0, nvaTime = 0, unclassifiedTime = 0;
+        Object.values(this.taskSummaries).forEach(summary => {
+            const total = summary.totalTime || 0;
+            if (summary.task.hasOwnProperty('va')) {
+                if (summary.task.va === true) vaTime += total;
+                else if (summary.task.va === false) nvaTime += total;
+                else unclassifiedTime += total;
+            } else {
+                unclassifiedTime += total;
+            }
+        });
+        return { vaTime, nvaTime, unclassifiedTime };
+    }
+
+    /**
+     * @brief Crée le diagramme circulaire de répartition VA/NVA.
+     */
+    createVaNvaChart() {
+        const el = document.getElementById('vaNvaChart');
+        if (!el) return;
+        const ctx = el.getContext('2d');
+        const { vaTime, nvaTime, unclassifiedTime } = this.getVaNvaTotals();
+
+        this.vaNvaChart = new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: ['VA', 'NVA', 'Non classé'],
+                datasets: [{
+                    data: [vaTime, nvaTime, unclassifiedTime],
+                    backgroundColor: ['#2e7d32', '#c62828', '#9e9e9e']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'right' },
+                    datalabels: {
+                        formatter: (value, ctx) => {
+                            const total = ctx.dataset.data.reduce((a, b) => a + b, 0) || 1;
+                            const percentage = ((value / total) * 100).toFixed(1) + '%';
+                            return percentage;
+                        },
+                        color: '#fff'
+                    }
+                }
+            }
+        });
+    }
+
+    /**
+     * @brief Met à jour le diagramme VA/NVA après un changement de classification.
+     */
+    updateVaNvaChart() {
+        if (!this.vaNvaChart) {
+            this.createVaNvaChart();
+            return;
+        }
+        const { vaTime, nvaTime, unclassifiedTime } = this.getVaNvaTotals();
+        const ds = this.vaNvaChart.data.datasets[0];
+        ds.data = [vaTime, nvaTime, unclassifiedTime];
+        this.vaNvaChart.update();
     }
 
     /**
@@ -321,6 +392,8 @@ class SummaryPage {
             const taskDiv = document.createElement('div');
             taskDiv.className = 'task-summary';
             
+            const isVA = summary.task.hasOwnProperty('va') ? summary.task.va === true : null;
+
             taskDiv.innerHTML = `
                 <div class="task-summary-header" style="background-color: ${summary.task.color}">
                     <h2>${summary.task.title}</h2>
@@ -338,11 +411,50 @@ class SummaryPage {
                     <div class="total-time">
                         Temps total : ${formatDuration(summary.totalTime)}
                     </div>
+                    <div class="va-nva-controls" data-task-id="${summary.task.id}">
+                        <span class="classification-label">Classification :</span>
+                        <button type="button" class="classification-button va ${isVA === true ? 'selected' : ''}" data-task-id="${summary.task.id}" aria-pressed="${isVA === true}">VA</button>
+                        <button type="button" class="classification-button nva ${isVA === false ? 'selected' : ''}" data-task-id="${summary.task.id}" aria-pressed="${isVA === false}">NVA</button>
+                    </div>
                 </div>
             `;
             
+            // Attache les écouteurs de clic pour VA/NVA
+            const vaBtn = taskDiv.querySelector('.classification-button.va');
+            const nvaBtn = taskDiv.querySelector('.classification-button.nva');
+            vaBtn.addEventListener('click', () => this.setTaskClassification(summary.task.id, true, vaBtn, nvaBtn));
+            nvaBtn.addEventListener('click', () => this.setTaskClassification(summary.task.id, false, vaBtn, nvaBtn));
+
             tasksSummaryDiv.appendChild(taskDiv);
         });
+    }
+
+    /**
+     * @brief Définit et persiste la classification VA/NVA d'une tâche puis met à jour le visuel.
+     * @param {number} taskId Identifiant de la tâche
+     * @param {boolean} isVA true si VA, false si NVA
+     * @param {HTMLButtonElement} vaBtn Bouton VA lié
+     * @param {HTMLButtonElement} nvaBtn Bouton NVA lié
+     */
+    setTaskClassification(taskId, isVA, vaBtn, nvaBtn) {
+        // Met à jour la donnée en mémoire
+        const idx = this.tasks.findIndex(t => t.id === taskId);
+        if (idx === -1) return;
+        this.tasks[idx].va = isVA;
+
+        // Persiste dans le stockage
+        Storage.set('tasks', this.tasks);
+
+        // Met à jour les classes sélectionnées
+        requestAnimationFrame(() => {
+            vaBtn.classList.toggle('selected', isVA === true);
+            vaBtn.setAttribute('aria-pressed', String(isVA === true));
+            nvaBtn.classList.toggle('selected', isVA === false);
+            nvaBtn.setAttribute('aria-pressed', String(isVA === false));
+        });
+
+        // Met à jour le diagramme VA/NVA
+        this.updateVaNvaChart();
     }
 
     /**
@@ -364,7 +476,8 @@ class SummaryPage {
             ['Observateur', this.observationInfo.examinerName],
             ['Date', new Date(this.observationInfo.examDate).toLocaleDateString('fr-FR')],
             [],
-            ['Résumé des temps par tâche']
+            ['Résumé des temps par tâche'],
+            ['Tâche', 'Temps total', 'Pourcentage', 'Classification']
         ];
 
         let totalSessionTime = 0;
@@ -374,10 +487,12 @@ class SummaryPage {
 
         Object.values(this.taskSummaries).forEach(summary => {
             const percentage = ((summary.totalTime / totalSessionTime) * 100).toFixed(2);
+            const classif = summary.task.hasOwnProperty('va') ? (summary.task.va ? 'VA' : 'NVA') : '';
             infoData.push([
                 summary.task.title,
                 formatDuration(summary.totalTime),
-                `${percentage}%`
+                `${percentage}%`,
+                classif
             ]);
         });
 
@@ -385,7 +500,7 @@ class SummaryPage {
         
         const statsData = [
             ['Statistiques détaillées par tâche'],
-            ['Tâche', 'Temps total', 'Nombre d\'occurrences', 'Temps moyen', 'Temps minimum', 'Temps maximum', 'Pourcentage du temps total']
+            ['Tâche', 'Temps total', 'Nombre d\'occurrences', 'Temps moyen', 'Temps minimum', 'Temps maximum', 'Pourcentage du temps total', 'Classification']
         ];
 
         Object.values(this.taskSummaries).forEach(summary => {
@@ -394,6 +509,7 @@ class SummaryPage {
             const minTime = durations.length > 0 ? Math.min(...durations) : 0;
             const maxTime = durations.length > 0 ? Math.max(...durations) : 0;
             const percentage = ((summary.totalTime / totalSessionTime) * 100).toFixed(2) + '%';
+            const classif = summary.task.hasOwnProperty('va') ? (summary.task.va ? 'VA' : 'NVA') : '';
 
             statsData.push([
                 summary.task.title,
@@ -402,7 +518,8 @@ class SummaryPage {
                 formatDuration(avgTime),
                 formatDuration(minTime),
                 formatDuration(maxTime),
-                percentage
+                percentage,
+                classif
             ]);
 
             if (durations.length >= 2) {

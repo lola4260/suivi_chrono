@@ -92,6 +92,50 @@
 }
 
 /**
+ * @section va-nva-controls Sélecteur VA/NVA
+ */
+.va-nva-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    justify-content: flex-end;
+    padding: 10px 15px 15px 15px;
+}
+
+.classification-label {
+    margin-right: 6px;
+    color: #555;
+}
+
+.classification-button {
+    border: 1px solid #ccc;
+    background: #fff;
+    color: #333;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 0.95em;
+}
+
+.classification-button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+}
+
+.classification-button.va.selected {
+    background-color: #2e7d32; /* vert */
+    border-color: #2e7d32;
+    color: #fff;
+}
+
+.classification-button.nva.selected {
+    background-color: #c62828; /* rouge */
+    border-color: #c62828;
+    color: #fff;
+}
+
+/**
  * @section export-buttons Boutons d'exportation
  */
 .export-buttons {
@@ -203,6 +247,12 @@
 
     .export-button {
         padding: 12px 20px;
+    }
+
+    .va-nva-controls {
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 8px;
     }
 }
 

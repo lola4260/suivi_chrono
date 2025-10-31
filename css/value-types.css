@@ -1,0 +1,62 @@
+.value-type-selector {
+    margin-top: 15px;
+    padding: 10px;
+    border-top: 1px solid #eee;
+}
+
+.value-type-label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: #666;
+}
+
+.value-type-options {
+    display: flex;
+    gap: 10px;
+}
+
+/* Style des boutons */
+.value-type-button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.value-type-button:hover {
+    opacity: 0.9;
+}
+
+.value-type-button.selected {
+    outline: 2px solid #000;
+}
+
+.va-button {
+    background-color: #28a745;
+    color: white;
+}
+
+.nva-button {
+    background-color: #dc3545;
+    color: white;
+}
+
+/* Style des tâches selon leur classification */
+.task-va {
+    border-left: 4px solid #28a745 !important;
+}
+
+.task-nva {
+    border-left: 4px solid #dc3545 !important;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .value-type-options {
+        flex-direction: column;
+        gap: 10px;
+    }
+}
