@@ -10,6 +10,8 @@
     <script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+    <script src="https://cdn.jsdelivr.net/npm/exceljs/dist/exceljs.min.js"></script>
+    <script src="https://unpkg.com/xlsx-populate/browser/xlsx-populate.min.js"></script>
     <link rel="manifest" href="../manifest.json">
     <meta name="theme-color" content="#4CAF50">
 </head>
@@ -58,7 +60,12 @@
 
         <!--Bouton d'exportation des données vers Excel-->
         <div class="export-buttons">
-            <button id="exportExcelButton" class="export-button">Exporter vers Excel</button>
+            <div style="margin-bottom:8px;">
+                <label for="templateUpload">(Optionnel) Charger votre template Excel (.xlsx) :</label>
+                <input id="templateUpload" type="file" accept=".xlsx" />
+            </div>
+            <button id="exportExcelNativeChartsButton" class="export-button" title="Utilise le template chargé ou celui placé dans assets/excel/template_charts.xlsx pour générer des graphiques Excel natifs">Exporter vers le template</button>
+            <div id="exportStatus" style="margin-top:8px;color:#333;font-size:0.95rem"></div>
         </div>
     </div>
 
