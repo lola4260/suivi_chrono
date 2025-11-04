@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="fr">
-<!--Métadonnées et ressources externes-->
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -74,16 +73,9 @@
         </div>
     </div>
 
-    <!--Inclusion des scripts JavaScript-->
     <script src="../js/main.js"></script>
     <script src="../js/formulaire.js"></script>
-    <script>
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('../js/service-worker.js')
-                .then(reg => console.log('Service Worker registered', reg))
-                .catch(err => console.warn('Service Worker registration failed', err));
-        }
-    </script>
+    <script>if('serviceWorker' in navigator){navigator.serviceWorker.register('../js/service-worker.js');}</script>
 </body>
 
 </html>

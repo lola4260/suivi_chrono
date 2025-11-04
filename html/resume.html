@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="fr">
-<!--Métadonnées et ressources externes-->
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -17,18 +16,14 @@
 </head>
 <body>
     <div class="summary-container">
-        <!--Section conteneur principal du résumé de session-->
-        <!--Subsection informations générales-->
         <div class="summary-header">
             <h1>Résumé de la session d'observation</h1>
             <div id="session-info">
             </div>
         </div>
-        <!--Subsection résumé des tâches-->
         <div id="tasks-summary">
         </div>
-        
-        <!--Visualisation des données sous forme de graphiques-->
+
         <div class="charts-container">
             <div class="chart-section">
                 <h2>Répartition VA / NVA</h2>
@@ -58,7 +53,6 @@
             </div>
         </div>
 
-        <!--Bouton d'exportation des données vers Excel-->
         <div class="export-buttons">
             <div style="margin-bottom:8px;">
                 <label for="templateUpload">(Optionnel) Charger votre template Excel (.xlsx) :</label>
@@ -69,15 +63,8 @@
         </div>
     </div>
 
-    <!--Inclusion des scripts JavaScript-->
     <script src="../js/main.js"></script>
     <script src="../js/resume.js"></script>
-    <script>
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('../js/service-worker.js')
-                .then(reg => console.log('Service Worker registered', reg))
-                .catch(err => console.warn('Service Worker registration failed', err));
-        }
-    </script>
+    <script>if('serviceWorker' in navigator){navigator.serviceWorker.register('../js/service-worker.js');}</script>
 </body>
 </html>

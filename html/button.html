@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="fr">
-<!--Métadonnées et ressources externes-->
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,7 +10,6 @@
     <meta name="theme-color" content="#4CAF50">
 </head>
 
- <!--Conteneur principal de l'application-->
 <body>
     <div class="buttons-container">
         <div id="observation-info" class="observation-header">
@@ -29,7 +27,6 @@
         </div>
     </div>
 
-    <!--Fenêtres modales pour description et ajout de tâche-->
     <div id="descriptionModal" class="modal">
         <div class="modal-content">
             <span class="close-modal">&times;</span>
@@ -63,18 +60,11 @@
         </div>
     </div>
 
-    <!--Inclusion des scripts JavaScript-->
     <script src="../js/main.js"></script>
     <script src="../js/modal.js"></script>
     <script src="../js/chrono.js"></script>
     <script src="../js/buttons.js"></script>
-    <script>
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('../js/service-worker.js')
-                .then(reg => console.log('Service Worker registered', reg))
-                .catch(err => console.warn('Service Worker registration failed', err));
-        }
-    </script>
+    <script>if('serviceWorker' in navigator){navigator.serviceWorker.register('../js/service-worker.js');}</script>
     <script>
         document.getElementById('addTaskBtn').onclick = function(e) {
             e.preventDefault();

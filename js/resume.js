@@ -1,19 +1,4 @@
-/**
- * @file resume.js
- * @brief Gestion de la page de synthèse des observations et génération des graphiques/excel.
- *
- * Cette classe récupère les données stockées, calcule les statistiques,
- * affiche les informations sur la session et les tâches, génère des graphiques
- * (camembert, barre, courbe de Gauss) et permet l'export Excel.
- *
- * @date 2025-10-09
- * @author Lola Gauducheau
- */
-
-/**
- * @class SummaryPage
- * @brief Représente la page de synthèse des observations.
- */
+// Page de synthèse des observations
 class SummaryPage {
     /**
      * @brief Constructeur de la classe SummaryPage.
@@ -27,28 +12,17 @@ class SummaryPage {
         this.createCharts();
     }
 
-    /**
-     * @brief Calcule les données d'une distribution gaussienne normalisée pour un ensemble de durées.
-     * @param {Array<number>} data Tableau des durées en millisecondes.
-     * @param {number} points Nombre de points à générer pour la courbe.
-     * @return {Array<{x:number, y:number}>} Tableau des points {x, y} normalisés.
-     */
     calculateGaussianData(data, points = 50) {
-        console.log('Calculating Gaussian data for:', data);
         const mean = data.reduce((a, b) => a + b, 0) / data.length;
-        console.log('Mean:', mean);
         const variance = data.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / data.length;
         const stdDev = Math.sqrt(variance);
-        console.log('Standard deviation:', stdDev);
         const min = Math.min(...data);
         const max = Math.max(...data);
         const range = max - min;
         const extendedMin = min - (range * 0.2);
         const extendedMax = max + (range * 0.2);
         const step = (extendedMax - extendedMin) / points;
-        
-        console.log('Range:', { min, max, extendedMin, extendedMax, step });
-        
+
         const gaussianData = [];
         for (let i = 0; i <= points; i++) {
             const x = extendedMin + (step * i);
@@ -59,8 +33,6 @@ class SummaryPage {
 
         const maxY = Math.max(...gaussianData.map(point => point.y));
         gaussianData.forEach(point => point.y = point.y / maxY);
-        
-        console.log('Generated points:', gaussianData.length);
         return gaussianData;
     }
 
@@ -258,20 +230,12 @@ class SummaryPage {
      */
     createGaussChart() {
         const ctx = document.getElementById('gaussChart').getContext('2d');
-        console.log('Creating Gauss chart');
-        console.log('Task summaries:', this.taskSummaries);
-        
         const datasets = Object.values(this.taskSummaries).map(summary => {
             const durations = summary.entries.map(entry => entry.duration);
-            console.log(`Task ${summary.task.title} has ${durations.length} entries:`, durations);
-            
             if (durations.length < 2) {
-                console.log(`Skipping task ${summary.task.title} - not enough data points`);
                 return null;
             }
-            
             const gaussData = this.calculateGaussianData(durations);
-            console.log(`Gaussian data for ${summary.task.title}:`, gaussData);
 
             return {
                 label: summary.task.title,
@@ -282,8 +246,6 @@ class SummaryPage {
                 pointRadius: 0
             };
         }).filter(dataset => dataset !== null);
-
-        console.log('Final datasets:', datasets);
 
         if (datasets.length > 0) {
             this.gaussChart = new Chart(ctx, {
@@ -333,7 +295,6 @@ class SummaryPage {
                 }
             });
         } else {
-            console.log('No datasets available for Gauss chart - need at least 2 entries per task');
             const container = document.getElementById('gaussChart').parentElement.parentElement;
             container.innerHTML = '<p class="no-data-message">Pas assez de données pour afficher la courbe de Gauss. Il faut au moins 2 mesures par activité.</p>';
             this.gaussChart = null;
@@ -472,7 +433,7 @@ class SummaryPage {
                     await this.exportExcelSmart();
                     if (statusEl) statusEl.textContent = 'Export terminé (si un fichier n\'a pas été téléchargé, vérifie la console ou le template).';
                 } catch (e) {
-                    console.error('Erreur dans le processus d\'export:', e);
+                    // conserve l'alerte, supprime les logs
                     if (statusEl) statusEl.textContent = `Erreur lors de l'export : ${e && e.message ? e.message : e}`;
                     alert('Erreur lors de l\'export - regarde la console pour plus de détails.');
                 }
@@ -857,7 +818,6 @@ class SummaryPage {
             if (!res.ok) throw new Error(`Template non trouvé (${res.status})`);
             arrayBuffer = await res.arrayBuffer();
         } catch (e) {
-            console.warn('Template Excel manquant ou inaccessible:', e);
             alert("Template manquant. Ajoutez 'template_charts.xlsx' dans assets/excel/ puis réessayez.");
             return;
         }
@@ -865,7 +825,6 @@ class SummaryPage {
         try {
             await this._buildAndDownloadNativeFromArrayBuffer(arrayBuffer);
         } catch (e) {
-            console.warn('Echec de génération des graphiques natifs:', e);
             alert("Impossible de générer le fichier à partir du template. Vérifiez que les plages nommées existent et réessayez.");
         }
     }
@@ -979,7 +938,7 @@ class SummaryPage {
                     }
                 } catch (_) { /* ignore */ }
             } catch (e) {
-                console.warn('Smart export - natif impossible, on tente images:', e);
+                // fallback silencieux
             }
         }
 
@@ -988,7 +947,7 @@ class SummaryPage {
             await this.exportToExcelWithCharts();
             return;
         } catch (e) {
-            console.warn('Smart export - images impossible, on tente données:', e);
+            // fallback silencieux
         }
 
         // Fallback données
@@ -1005,7 +964,7 @@ class SummaryPage {
         try {
             const defined = workbook.definedName(name);
             if (!defined) {
-                console.warn(`Plage nommée absente dans le template: ${name}`);
+                // plage nommée absente dans le template
                 return;
             }
             const range = defined.range();
@@ -1028,7 +987,7 @@ class SummaryPage {
                 });
             });
         } catch (e) {
-            console.warn(`Impossible d'écrire la plage ${name}:`, e);
+            // impossible d'écrire la plage nommée
         }
     }
 
@@ -1084,7 +1043,6 @@ class SummaryPage {
             }
 
             if (!targetSheet) {
-                console.warn('Aucune feuille compatible (Tâche/Début/Fin/Durée/VA/NVA) trouvée dans le template.');
                 return false;
             }
 
@@ -1164,7 +1122,6 @@ class SummaryPage {
 
             return true;
         } catch (e) {
-            console.warn('Erreur lors du remplissage du template utilisateur:', e);
             return false;
         }
     }

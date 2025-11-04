@@ -6,7 +6,11 @@
     "start": "http-server -c-1",
     "build:android": "npm run copy && npx cap sync android && npx cap open android",
     "build:ios": "npm run copy && npx cap sync ios && npx cap open ios",
-    "copy": "mkdir -p www && cp -r css html js manifest.json www/"
+    "copy": "mkdir -p www && cp -r css html js manifest.json www/",
+    "minify:js": "terser js/main.js -c drop_console=true -m -o js/main.js && terser js/formulaire.js -c drop_console=true -m -o js/formulaire.js && terser js/buttons.js -c drop_console=true -m -o js/buttons.js && terser js/modal.js -c drop_console=true -m -o js/modal.js && terser js/chrono.js -c drop_console=true -m -o js/chrono.js && terser js/resume.js -c drop_console=true -m -o js/resume.js && terser js/service-worker.js -c -m -o js/service-worker.js",
+    "minify:css": "cleancss -O2 -o css/style.css css/style.css && cleancss -O2 -o css/formulaire.css css/formulaire.css && cleancss -O2 -o css/buttons.css css/buttons.css && cleancss -O2 -o css/resume.css css/resume.css && cleancss -O2 -o css/value-types.css css/value-types.css",
+    "minify:html": "html-minifier-terser --collapse-whitespace --remove-comments --remove-redundant-attributes --remove-empty-attributes --use-short-doctype --minify-css true --minify-js true -o html/formulaire.html html/formulaire.html && html-minifier-terser --collapse-whitespace --remove-comments --remove-redundant-attributes --remove-empty-attributes --use-short-doctype --minify-css true --minify-js true -o html/button.html html/button.html && html-minifier-terser --collapse-whitespace --remove-comments --remove-redundant-attributes --remove-empty-attributes --use-short-doctype --minify-css true --minify-js true -o html/resume.html html/resume.html && html-minifier-terser --collapse-whitespace --remove-comments --use-short-doctype --minify-css true --minify-js true -o index.html index.html",
+    "minify": "npm run minify:js && npm run minify:css && npm run minify:html"
   },
   "dependencies": {
     "@capacitor/android": "^5.0.0",
@@ -15,6 +19,9 @@
   },
   "devDependencies": {
     "@capacitor/cli": "^5.0.0",
-    "http-server": "^14.1.1"
+    "http-server": "^14.1.1",
+    "terser": "^5.31.0",
+    "clean-css-cli": "^5.6.3",
+    "html-minifier-terser": "^7.2.0"
   }
 }

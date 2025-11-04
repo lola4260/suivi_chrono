@@ -1,24 +1,5 @@
-/**
- * @file chrono.js
- * @brief Gestion du chronomètre pour le suivi des tâches.
- *
- * Cette classe fournit un chronomètre haute précision pour mesurer
- * la durée des tâches observées dans la session en cours.
- * Elle met à jour l'affichage en temps réel, sauvegarde les sessions
- * dans le stockage local et gère l'état visuel des boutons actifs.
- *
- * @date 2025-10-09
- * @author Lola Gauducheau
- */
-
-/**
- * @class Chronometer
- * @brief Chronomètre haute précision pour le suivi du temps des tâches.
- */
+// Chronomètre haute précision pour le suivi du temps des tâches
 class Chronometer {
-  /**
-   * @brief Initialise le chronomètre et ses propriétés internes.
-   */
   constructor() {
     this.isRunning = false;
     this.startTime = 0;
@@ -31,19 +12,12 @@ class Chronometer {
     this.rafId = null;
   }
 
-  /**
-   * @brief Met en cache les éléments d'affichage du chronomètre.
-   */
   cacheDisplayElements() {
     this.displayElements = Array.from(
       document.querySelectorAll(".chrono-display")
     );
   }
 
-  /**
-   * @brief Démarre le chronomètre pour une tâche spécifique.
-   * @param {string} taskId - Identifiant de la tâche à chronométrer.
-   */
   start(taskId) {
     if (this.isRunning) {
       this.stop();
@@ -66,9 +40,6 @@ class Chronometer {
     this.updateButtonStyles();
   }
 
-  /**
-   * @brief Arrête le chronomètre et enregistre la durée dans l'historique.
-   */
   stop() {
     if (this.isRunning) {
       if (this.useRAF) {
@@ -86,18 +57,12 @@ class Chronometer {
     }
   }
 
-  /**
-   * @brief Met à jour l'affichage via `requestAnimationFrame`.
-   */
   updateRAF() {
     if (!this.isRunning) return;
     this.update();
     this.rafId = requestAnimationFrame(() => this.updateRAF());
   }
 
-  /**
-   * @brief Met à jour le temps affiché dans tous les éléments du DOM.
-   */
   update() {
     if (!this.isRunning) return;
 
@@ -118,9 +83,6 @@ class Chronometer {
     this.displayElements.forEach((el) => (el.textContent = display));
   }
 
-  /**
-   * @brief Met à jour les styles des boutons de tâches.
-   */
   updateButtonStyles() {
     if (!this.cachedButtons.size) {
       document.querySelectorAll(".task-button").forEach((btn) => {
@@ -143,9 +105,6 @@ class Chronometer {
     });
   }
 
-  /**
-   * @brief Sauvegarde la session du chronomètre dans l'historique.
-   */
   saveToHistory() {
     if (!this.currentTaskId) return;
 
@@ -162,16 +121,10 @@ class Chronometer {
     Storage.set("timeHistory", history);
   }
 
-  /**
-   * @brief Vide les caches internes.
-   */
   clearCache() {
     this.cachedButtons.clear();
     this.displayElements = [];
   }
 }
-
-/**
- * @brief Instance unique du chronomètre utilisée dans l'application.
- */
+// Instance unique du chronomètre
 const chronometer = new Chronometer();

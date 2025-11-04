@@ -87,3 +87,12 @@ L'application est maintenant installée sur votre appareil et accessible depuis 
 - Fonctionnement hors-ligne
 - Export Excel amélioré
 - Visualisations statistiques
+
+## Optimisation (2025-11-04)
+
+- Réduction de la taille des fichiers JavaScript et HTML sans changer l'interface ni les fonctionnalités:
+   - Suppression des commentaires verbeux et des `console.*` de debug dans `js/resume.js` (les alertes utilisateur restent actives)
+   - Allègement de l'inscription du Service Worker dans les pages HTML
+   - Nettoyage des commentaires de tête dans la plupart des fichiers JS
+- Aucun changement de logique ni de sélecteurs CSS; l'interface reste identique.
+- Si besoin de restaurer un comportement de debug, réintroduire des `console.log` localement le temps du diagnostic.

@@ -1,33 +1,11 @@
-/**
- * @file formulaire.js
- * @brief Gestion du formulaire de création et configuration des tâches d'observation.
- *
- * Cette classe permet à l'utilisateur de configurer une session d'observation :
- * - Saisie des informations (observateur, observé, date)
- * - Ajout, affichage et suppression de tâches
- * - Validation et enregistrement des données dans le stockage local
- *
- * @date 2025-10-09
- * @author Lola Gauducheau
- */
-
-/**
- * @class TaskForm
- * @brief Gère le cycle de vie complet du formulaire de configuration des tâches.
- */
+// Gestion du formulaire de configuration des tâches
 class TaskForm {
-  /**
-   * @brief Initialise le formulaire et configure les écouteurs d'événements.
-   */
   constructor() {
     this.tasks = [];
     this.initializeElements();
     this.setupEventListeners();
   }
 
-  /**
-   * @brief Initialise les références aux éléments du DOM.
-   */
   initializeElements() {
     this.colorPicker = document.getElementById("buttonColor");
     this.colorHex = document.getElementById("colorHex");
@@ -44,9 +22,6 @@ class TaskForm {
     };
   }
 
-  /**
-   * @brief Configure les écouteurs d'événements du formulaire.
-   */
   setupEventListeners() {
     const updateColor = debounce((e) => {
       this.colorHex.value = e.target.value;
@@ -59,10 +34,6 @@ class TaskForm {
     );
   }
 
-  /**
-   * @brief Gère la soumission du formulaire d'ajout de tâche.
-   * @param {Event} e - Événement de soumission du formulaire.
-   */
   handleSubmit(e) {
     e.preventDefault();
 
@@ -86,10 +57,6 @@ class TaskForm {
     this.fields.taskTitle.focus();
   }
 
-  /**
-   * @brief Récupère les informations générales de la session d'observation.
-   * @returns {Object} Objet contenant `examineeName`, `examinerName`, `examDate`.
-   */
   getObservationInfo() {
     return {
       examineeName: this.fields.examineeName.value,
@@ -98,9 +65,6 @@ class TaskForm {
     };
   }
 
-  /**
-   * @brief Réinitialise les champs liés à la tâche après une soumission.
-   */
   resetTaskFields() {
     requestAnimationFrame(() => {
       this.fields.taskTitle.value = "";
@@ -116,21 +80,12 @@ class TaskForm {
     });
   }
 
-  /**
-   * @brief Restaure les informations de la session d'observation après réinitialisation du formulaire.
-   * @param {Object} info - Informations à restaurer (examiné, examinateur, date).
-   */
   restoreObservationInfo(info) {
     this.fields.examineeName.value = info.examineeName;
     this.fields.examinerName.value = info.examinerName;
     this.fields.examDate.value = info.examDate;
   }
 
-  /**
-   * @brief Crée un élément DOM représentant une tâche.
-   * @param {Object} task - Objet représentant la tâche.
-   * @returns {HTMLElement} Élément DOM de la tâche.
-   */
   createTaskElement(task) {
     const taskEl = document.createElement("div");
     taskEl.className = "task-item";
@@ -158,21 +113,11 @@ class TaskForm {
     return taskEl;
   }
 
-  /**
-   * @brief Protège le texte HTML contre les injections (XSS).
-   * @param {string} text - Texte à échapper.
-   * @returns {string} Texte sécurisé pour l'insertion dans le DOM.
-   */
   escapeHtml(text) {
     const div = document.createElement("div");
     div.textContent = text;
     return div.innerHTML;
   }
-
-  /**
-   * @brief Supprime une tâche avec une animation de fondu.
-   * @param {number} taskId - Identifiant de la tâche à supprimer.
-   */
   deleteTask(taskId) {
     const taskElement = document.querySelector(`[data-task-id="${taskId}"]`);
     if (!taskElement) return;
@@ -197,9 +142,6 @@ class TaskForm {
     };
   }
 
-  /**
-   * @brief Valide la configuration et passe à la page suivante.
-   */
   handleValidation() {
     const observationInfo = this.getObservationInfo();
 
@@ -224,7 +166,5 @@ class TaskForm {
   }
 }
 
-/**
- * @brief Instance unique du gestionnaire de formulaire utilisée dans l'application.
- */
+// Instance unique du gestionnaire de formulaire
 const taskForm = new TaskForm();
