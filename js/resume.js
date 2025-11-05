@@ -545,6 +545,44 @@ class SummaryPage {
         const wsInfo = XLSX.utils.aoa_to_sheet(infoData);
         const wsStats = XLSX.utils.aoa_to_sheet(statsData);
         const wsDetails = XLSX.utils.aoa_to_sheet(detailsData);
+        // Ajout d'une feuille étendue contenant des colonnes numériques exploitables
+        // pour le traitement/graphes (durée en ms et fraction de jour Excel)
+        const detailsExtended = [
+            ['Détails chronologiques des activités (extended)'],
+            ['Tâche', 'Début', 'Fin', 'Durée (texte)', 'Durée (ms)', 'Durée (jours)']
+        ];
+        allEntries.forEach(entry => {
+            detailsExtended.push([
+                entry.taskTitle,
+                formatTime(entry.startTime),
+                formatTime(entry.endTime),
+                formatDuration(entry.duration),
+                entry.duration || 0,
+                (entry.duration || 0) / 86400000
+            ]);
+        });
+        const wsDetailsExtended = XLSX.utils.aoa_to_sheet(detailsExtended);
+        // Feuille RAW : colonnes directement exploitables par Excel
+        // Début/Fin en numéro de série Excel (jours depuis 1899-12-31), Durée en ms et en jours
+        const rawData = [
+            ['Raw'],
+            ['Tâche', 'Début', 'Fin', 'Durée (ms)', 'Durée (jours)', 'VA/NVA']
+        ];
+        allEntries.forEach(entry => {
+            const taskObj = this.taskSummaries[entry.taskId] ? this.taskSummaries[entry.taskId].task : null;
+            const classif = taskObj && taskObj.hasOwnProperty('va') ? (taskObj.va ? 'VA' : 'NVA') : '';
+            const startSerial = entry.startTime ? (entry.startTime / 86400000) + 25569 : '';
+            const endSerial = entry.endTime ? (entry.endTime / 86400000) + 25569 : '';
+            rawData.push([
+                entry.taskTitle,
+                startSerial,
+                endSerial,
+                entry.duration || 0,
+                (entry.duration || 0) / 86400000,
+                classif
+            ]);
+        });
+        const wsRaw = XLSX.utils.aoa_to_sheet(rawData);
 
         // Données pour le diagramme VA/NVA
         const { vaTime, nvaTime, unclassifiedTime } = this.getVaNvaTotals();
@@ -586,6 +624,8 @@ class SummaryPage {
         XLSX.utils.book_append_sheet(wb, wsInfo, "Résumé");
         XLSX.utils.book_append_sheet(wb, wsStats, "Statistiques");
         XLSX.utils.book_append_sheet(wb, wsDetails, "Chronologie");
+    XLSX.utils.book_append_sheet(wb, wsDetailsExtended, "Chronologie_Extended");
+    XLSX.utils.book_append_sheet(wb, wsRaw, "Raw");
     XLSX.utils.book_append_sheet(wb, wsVaNva, "VA_NVA");
     XLSX.utils.book_append_sheet(wb, wsGauss, "Gauss");
 
@@ -722,6 +762,29 @@ class SummaryPage {
         allEntries.sort((a, b) => a.startTime - b.startTime);
         allEntries.forEach(e => detailsRows.push([e.taskTitle, formatTime(e.startTime), formatTime(e.endTime), formatDuration(e.duration)]));
         wsDetails.addRows(detailsRows);
+
+        // 3b) Feuille Raw pour Excel (dates en tant qu'objets Date, durées numériques)
+        const wsRaw = workbook.addWorksheet('Raw');
+        const rawHeader = ['Tâche', 'Début', 'Fin', 'Durée (ms)', 'Durée (jours)', 'VA/NVA'];
+        wsRaw.addRow(rawHeader);
+        allEntries.forEach(e => {
+            const taskObj = this.taskSummaries[e.taskId] ? this.taskSummaries[e.taskId].task : null;
+            const classif = taskObj && taskObj.hasOwnProperty('va') ? (taskObj.va ? 'VA' : 'NVA') : '';
+            const startDate = e.startTime ? new Date(e.startTime) : null;
+            const endDate = e.endTime ? new Date(e.endTime) : null;
+            const durMs = e.duration || 0;
+            const durDays = durMs / 86400000;
+            wsRaw.addRow([e.taskTitle, startDate, endDate, durMs, durDays, classif]);
+        });
+        // Formattage des colonnes : colonne B/C en date/heure, colonne E en durée
+        wsRaw.getColumn(2).numFmt = 'dd/mm/yyyy hh:mm:ss';
+        wsRaw.getColumn(3).numFmt = 'dd/mm/yyyy hh:mm:ss';
+        wsRaw.getColumn(5).numFmt = '[h]:mm:ss.00';
+    // Feuille chronologie étendue avec colonnes numériques pour analyses/graphes
+    const wsDetailsExtended = workbook.addWorksheet('Chronologie_Extended');
+    const detailsExtendedRows = [['Détails chronologiques des activités (extended)'], ['Tâche', 'Début', 'Fin', 'Durée (texte)', 'Durée (ms)', 'Durée (jours)']];
+    allEntries.forEach(e => detailsExtendedRows.push([e.taskTitle, formatTime(e.startTime), formatTime(e.endTime), formatDuration(e.duration), e.duration || 0, (e.duration || 0) / 86400000]));
+    wsDetailsExtended.addRows(detailsExtendedRows);
 
         // 4) Feuille VA_NVA
         const wsVaNva = workbook.addWorksheet('VA_NVA');
@@ -894,6 +957,29 @@ class SummaryPage {
     this._fillNamedRangeSafe(workbook, 'TIMELINE', timelineRows, { numberFormats: { 4: '[h]:mm:ss' }, skipHeader: true });
 
         // Sauvegarde
+        // Ajoute une feuille RAW pour faciliter l'analyse côté Excel (dates, durées ms/jours, VA/NVA)
+        try {
+            const rawSheet = workbook.addSheet('Raw');
+            const rawHeader = ['Tâche', 'Début', 'Fin', 'Durée (ms)', 'Durée (jours)', 'VA/NVA'];
+            rawHeader.forEach((h, i) => rawSheet.cell(1, i + 1).value(h));
+            let r = 2;
+            Object.values(this.taskSummaries).forEach(s => s.entries.forEach(e => {
+                const taskTitle = s.task.title;
+                const startDate = e.startTime ? new Date(e.startTime) : null;
+                const endDate = e.endTime ? new Date(e.endTime) : null;
+                const durMs = e.duration || 0;
+                const durDays = durMs / 86400000;
+                const classif = s.task.hasOwnProperty('va') ? (s.task.va ? 'VA' : 'NVA') : '';
+                rawSheet.cell(r, 1).value(taskTitle);
+                if (startDate) rawSheet.cell(r, 2).value(startDate);
+                if (endDate) rawSheet.cell(r, 3).value(endDate);
+                rawSheet.cell(r, 4).value(durMs);
+                rawSheet.cell(r, 5).value(durDays);
+                rawSheet.cell(r, 6).value(classif);
+                r++;
+            }));
+        } catch (e) { /* ignore if sheet cannot be added */ }
+
         const out = await workbook.outputAsync();
         const blob = new Blob([out], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
         const date = new Date().toISOString().split('T')[0];
@@ -1030,12 +1116,23 @@ class SummaryPage {
                     // Construire map normalisée
                     const normValues = values.map(safeNormalize);
                     const requiredNorm = required.map(safeNormalize);
-                    const found = requiredNorm.every(h => normValues.includes(h));
+                    // Tolérance : accepte si chaque en-tête requise apparaît comme sous-chaîne
+                    // d'une valeur d'en-tête (utile pour "Début (valeur Excel date+heure)").
+                    const found = requiredNorm.every(h => normValues.some(v => v.includes(h)));
                     if (found) {
                         targetSheet = sh;
                         headerRowIndex = r;
                         headerMap = {};
-                        normValues.forEach((v, idx) => { if (v) headerMap[v] = idx + 1; });
+                        // Construire une map de colonnes pour chaque en-tête requise
+                        requiredNorm.forEach(req => {
+                            for (let idx = 0; idx < normValues.length; idx++) {
+                                const v = normValues[idx];
+                                if (v && v.includes(req)) {
+                                    headerMap[req] = idx + 1;
+                                    break;
+                                }
+                            }
+                        });
                         break;
                     }
                 }
@@ -1100,6 +1197,29 @@ class SummaryPage {
             const linesWritten = allEntries.length;
 
             // Force le téléchargement du workbook modifié
+            // Ajoute aussi une feuille 'Raw' contenant les données brutes (dates, durées ms/jours, VA/NVA)
+            try {
+                const rawSheet = workbook.addSheet('Raw');
+                const rawHeader = ['Tâche', 'Début', 'Fin', 'Durée (ms)', 'Durée (jours)', 'VA/NVA'];
+                rawHeader.forEach((h, i) => rawSheet.row(1).cell(i + 1).value(h));
+                let rr = 2;
+                allEntries.forEach(e => {
+                    const taskObj = e.task || null;
+                    const classif = taskObj && taskObj.hasOwnProperty('va') ? (taskObj.va ? 'VA' : 'NVA') : '';
+                    const startDate = e.startTime ? new Date(e.startTime) : null;
+                    const endDate = e.endTime ? new Date(e.endTime) : null;
+                    const durMs = e.duration || 0;
+                    const durDays = durMs / 86400000;
+                    rawSheet.row(rr).cell(1).value(e.taskTitle);
+                    if (startDate) rawSheet.row(rr).cell(2).value(startDate);
+                    if (endDate) rawSheet.row(rr).cell(3).value(endDate);
+                    rawSheet.row(rr).cell(4).value(durMs);
+                    rawSheet.row(rr).cell(5).value(durDays);
+                    rawSheet.row(rr).cell(6).value(classif);
+                    rr++;
+                });
+            } catch (_) { /* ignore if cannot add sheet */ }
+
             const out = await workbook.outputAsync();
             const blob = new Blob([out], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
             const date = new Date().toISOString().split('T')[0];
