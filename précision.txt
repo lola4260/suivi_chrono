@@ -23,3 +23,8 @@ passage c# (à voir)
 ajouter un bouton pour dire si c'est valeur ajouté (VA) ou non valeur ajouté (NVA)
 ajouter un bouton pour commenter la tâche en cours
 adapter le rendu exel avec le exel envoyé par stacy
+
+ajouter un menu déroulant pour les noms d'activité
+ajouter un bouton pause
+faire un guide
+ajouter la possibilité de faire des commentaires
