@@ -13,6 +13,7 @@ class ButtonsPage {
         this.observationInfoDiv = document.getElementById('observation-info');
         this.descriptionModal = new Modal('descriptionModal');
         this.addTaskModal = new Modal('addTaskModal');
+        this.pauseBtn = document.getElementById('pauseBtn');
     }
 
     setupPage() {
@@ -20,6 +21,16 @@ class ButtonsPage {
         this.createTaskButtons();
         this.setupEndSessionButton();
         this.setupAddTaskButton();
+        this.setupPauseButton();
+    }
+
+    setupPauseButton() {
+        if (!this.pauseBtn) return;
+        this.pauseBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            chronometer.pause();
+            return false;
+        });
     }
 
     displayObservationInfo() {

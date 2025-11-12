@@ -2,6 +2,7 @@
 class Chronometer {
   constructor() {
     this.isRunning = false;
+    this.isPaused = false;
     this.startTime = 0;
     this.currentTaskId = null;
     this.elapsedTime = 0;
@@ -19,10 +20,45 @@ class Chronometer {
   }
 
   start(taskId) {
+    // If already running and the same action is triggered, finalize previous timing
     if (this.isRunning) {
       this.stop();
     }
 
+    // If currently paused, decide whether to resume or finalize+start new
+    if (this.isPaused) {
+      // If clicking the same task (or no taskId provided), resume
+      if (!taskId || taskId === this.currentTaskId) {
+        this.isPaused = false;
+        this.isRunning = true;
+        this.startTime = performance.now() - this.elapsedTime;
+
+        if (!this.displayElements.length) {
+          this.cacheDisplayElements();
+        }
+
+        if (this.useRAF) {
+          this.updateRAF();
+        } else {
+          this.intervalId = setInterval(() => this.update(), 10);
+        }
+
+        this.updateButtonStyles();
+        return;
+      }
+
+      // If clicking a different task while paused, finalize the paused segment
+      // (save to history) then proceed to start a new timing session for taskId.
+      // Use the current elapsedTime as-is for the saved segment.
+      this.saveToHistory();
+      // clear paused state and reset elapsed before starting new session
+      this.isPaused = false;
+      this.elapsedTime = 0;
+      this.currentTaskId = null;
+      // continue to normal start flow below to start the new task
+    }
+
+    // Normal start of a new timing session
     this.isRunning = true;
     this.startTime = performance.now() - this.elapsedTime;
     this.currentTaskId = taskId;
@@ -47,15 +83,37 @@ class Chronometer {
       } else {
         clearInterval(this.intervalId);
       }
-
       this.isRunning = false;
       this.elapsedTime = performance.now() - this.startTime;
       this.saveToHistory();
       this.currentTaskId = null;
       this.elapsedTime = 0;
+      this.isPaused = false;
       this.updateButtonStyles();
     }
   }
+
+    pause() {
+      // Pause: stop updating the display but keep the currentTaskId and elapsedTime
+      if (this.isRunning) {
+        if (this.useRAF) {
+          cancelAnimationFrame(this.rafId);
+        } else {
+          clearInterval(this.intervalId);
+        }
+
+        this.isRunning = false;
+        this.isPaused = true;
+        this.elapsedTime = performance.now() - this.startTime;
+        this.updateButtonStyles();
+        return;
+      }
+
+      // If already paused, resume
+      if (this.isPaused) {
+        this.start();
+      }
+    }
 
   updateRAF() {
     if (!this.isRunning) return;
@@ -100,6 +158,18 @@ class Chronometer {
         const activeButton = this.cachedButtons.get(this.currentTaskId);
         if (activeButton) {
           activeButton.classList.add("active");
+        }
+      }
+
+      // Update pause button state/text if present
+      const pauseBtn = document.getElementById('pauseBtn');
+      if (pauseBtn) {
+        if (this.isPaused) {
+          pauseBtn.classList.add('paused');
+          pauseBtn.textContent = 'Reprendre';
+        } else {
+          pauseBtn.classList.remove('paused');
+          pauseBtn.textContent = 'Pause';
         }
       }
     });
