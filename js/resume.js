@@ -425,19 +425,26 @@ class SummaryPage {
     setupExportButtons() {
         const btnNativeCharts = document.getElementById('exportExcelNativeChartsButton');
         if (btnNativeCharts) {
-            // Use the smart exporter which will try the simple user template first
+            // Export using the canonical template in assets/excel/template_charts.xlsx
             btnNativeCharts.addEventListener('click', async () => {
-                const statusEl = document.getElementById('exportStatus');
                 try {
-                    if (statusEl) statusEl.textContent = 'Démarrage de l\'export...';
-                    await this.exportExcelSmart();
-                    if (statusEl) statusEl.textContent = 'Export terminé (si un fichier n\'a pas été téléchargé, vérifie la console ou le template).';
+                    await this.exportToExcelWithNativeChartsTemplate();
                 } catch (e) {
-                    // conserve l'alerte, supprime les logs
-                    if (statusEl) statusEl.textContent = `Erreur lors de l'export : ${e && e.message ? e.message : e}`;
                     alert('Erreur lors de l\'export - regarde la console pour plus de détails.');
                 }
             });
+
+            // Bouton pour exporter un Excel avec les graphiques en tant qu'images
+            const btnCharts = document.getElementById('exportExcelWithChartsButton');
+            if (btnCharts) {
+                btnCharts.addEventListener('click', async () => {
+                    try {
+                        await this.exportToExcelWithCharts();
+                    } catch (e) {
+                        alert('Erreur lors de l\'export des graphiques - regarde la console pour plus de détails.');
+                    }
+                });
+            }
         }
     }
 
@@ -994,51 +1001,7 @@ class SummaryPage {
         URL.revokeObjectURL(url);
     }
 
-    /**
-     * @brief Export intelligent: tente d'abord le natif via template, sinon images, sinon données.
-     */
-    async exportExcelSmart() {
-        // Tente natif via template
-        if (typeof XlsxPopulate !== 'undefined') {
-            try {
-                const templateInput = document.getElementById('templateUpload');
-                if (templateInput && templateInput.files && templateInput.files[0]) {
-                    const buf = await templateInput.files[0].arrayBuffer();
-                    // Try to detect a simple user template (columns: Tâche, Début, Fin, Durée, VA/NVA)
-                    const handled = await this._tryFillUserTemplateFromArrayBuffer(buf);
-                    if (handled) return;
-                    // fallback to native named-range template
-                    await this._buildAndDownloadNativeFromArrayBuffer(buf);
-                    return;
-                }
-                // Essaye de récupérer depuis assets
-                try {
-                    const res = await fetch('../assets/excel/template_charts.xlsx');
-                    if (res.ok) {
-                        const buf = await res.arrayBuffer();
-                        // Try to fill as a simple user template first, otherwise use the named-range native template
-                        const handled = await this._tryFillUserTemplateFromArrayBuffer(buf);
-                        if (handled) return;
-                        await this._buildAndDownloadNativeFromArrayBuffer(buf);
-                        return;
-                    }
-                } catch (_) { /* ignore */ }
-            } catch (e) {
-                // fallback silencieux
-            }
-        }
-
-        // Fallback images
-        try {
-            await this.exportToExcelWithCharts();
-            return;
-        } catch (e) {
-            // fallback silencieux
-        }
-
-        // Fallback données
-        this.exportToExcel();
-    }
+    // Export smart removed: the app now uses the canonical template in assets/excel/template_charts.xlsx
 
     /**
      * @brief Remplit en sécurité une plage nommée si elle existe; sinon log un avertissement.
@@ -1077,174 +1040,7 @@ class SummaryPage {
         }
     }
 
-    /**
-     * @brief Tente de remplir un template utilisateur simple contenant les en-têtes
-     * 'Tâche', 'Début', 'Fin', 'Durée', 'VA/NVA'. Si le template correspond, on
-     * écrit les lignes et force le téléchargement. Retourne true si traité.
-     * @param {ArrayBuffer} arrayBuffer
-     * @returns {Promise<boolean>}
-     */
-    async _tryFillUserTemplateFromArrayBuffer(arrayBuffer) {
-        try {
-            const workbook = await XlsxPopulate.fromDataAsync(arrayBuffer);
-            // Recherche d'une feuille contenant les en-têtes attendus.
-            // On est tolérant : on cherche sur les 5 premières lignes, insensible à la casse
-            // et aux accents/espaces additionnels.
-            const required = ['Tâche', 'Début', 'Fin', 'Durée', 'VA/NVA'];
-            const normalize = s => String(s || '').normalize('NFD').replace(/\p{Diacritic}/gu, '').replace(/[\s\u00A0]+/g, ' ').trim().toLowerCase();
-            // Fallback for environments where \p{Diacritic} is not supported
-            const safeNormalize = s => {
-                try { return normalize(s); } catch (e) { return String(s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[\s\u00A0]+/g, ' ').trim().toLowerCase(); }
-            };
-
-            let targetSheet = null;
-            let headerRowIndex = null;
-            let headerMap = null;
-
-            const sheets = workbook.sheets();
-            for (let i = 0; i < sheets.length; i++) {
-                const sh = sheets[i];
-                // Cherche sur les premières lignes (1..5)
-                for (let r = 1; r <= 5; r++) {
-                    const values = [];
-                    for (let c = 1; c <= 30; c++) {
-                        try {
-                            const v = sh.row(r).cell(c).value();
-                            values.push(v === null || v === undefined ? '' : String(v).trim());
-                        } catch (_) { values.push(''); }
-                    }
-                    // Construire map normalisée
-                    const normValues = values.map(safeNormalize);
-                    const requiredNorm = required.map(safeNormalize);
-                    // Tolérance : accepte si chaque en-tête requise apparaît comme sous-chaîne
-                    // d'une valeur d'en-tête (utile pour "Début (valeur Excel date+heure)").
-                    const found = requiredNorm.every(h => normValues.some(v => v.includes(h)));
-                    if (found) {
-                        targetSheet = sh;
-                        headerRowIndex = r;
-                        headerMap = {};
-                        // Construire une map de colonnes pour chaque en-tête requise
-                        requiredNorm.forEach(req => {
-                            for (let idx = 0; idx < normValues.length; idx++) {
-                                const v = normValues[idx];
-                                if (v && v.includes(req)) {
-                                    headerMap[req] = idx + 1;
-                                    break;
-                                }
-                            }
-                        });
-                        break;
-                    }
-                }
-                if (targetSheet) break;
-            }
-
-            if (!targetSheet) {
-                return false;
-            }
-
-            // Prépare les lignes à écrire (commence après la ligne d'en-têtes)
-            const allEntries = [];
-            Object.values(this.taskSummaries).forEach(s => s.entries.forEach(e => allEntries.push({ taskTitle: s.task.title, task: s.task, ...e })));
-            allEntries.sort((a,b) => a.startTime - b.startTime);
-
-            // Trouve la première ligne vide après l'en-tête : on considère vide si toutes
-            // les cellules correspondant aux en-têtes sont vides.
-            let writeRow = headerRowIndex + 1;
-            const headerCols = Object.values(headerMap);
-            const isRowEmpty = (rIdx) => {
-                return headerCols.every(col => {
-                    try {
-                        const v = targetSheet.row(rIdx).cell(col).value();
-                        return v === null || v === undefined || String(v).trim() === '';
-                    } catch (_) { return true; }
-                });
-            };
-            while (!isRowEmpty(writeRow)) writeRow++;
-
-            // Ecrit chaque entrée
-            const toExcelTime = (ms) => (ms || 0) / 86400000; // fraction of day
-            allEntries.forEach((e, idx) => {
-                const r = writeRow + idx;
-                // Use normalized header keys
-                const colTache = headerMap[safeNormalize('Tâche')];
-                const colDebut = headerMap[safeNormalize('Début')];
-                const colFin = headerMap[safeNormalize('Fin')];
-                const colDuree = headerMap[safeNormalize('Durée')];
-                const colVa = headerMap[safeNormalize('VA/NVA')];
-
-                // Tâche
-                if (colTache) targetSheet.row(r).cell(colTache).value(e.taskTitle);
-                // Début (écrire en tant que date si possible)
-                if (colDebut) {
-                    try { targetSheet.row(r).cell(colDebut).value(new Date(e.startTime)); } catch (_) { targetSheet.row(r).cell(colDebut).value(formatTime(e.startTime)); }
-                }
-                // Fin
-                if (colFin) {
-                    try { targetSheet.row(r).cell(colFin).value(new Date(e.endTime)); } catch (_) { targetSheet.row(r).cell(colFin).value(e.endTime ? formatTime(e.endTime) : ''); }
-                }
-                // Durée: on laisse vide pour que la formule du template la calcule; sinon écrire fraction de jour
-                if (colDuree) {
-                    // if template expects formula, leave blank. Optionally write numeric duration:
-                    // targetSheet.row(r).cell(colDuree).value(toExcelTime(e.duration));
-                }
-                // VA/NVA
-                if (colVa) {
-                    const classif = e.task && e.task.hasOwnProperty('va') ? (e.task.va ? 'VA' : 'NVA') : '';
-                    targetSheet.row(r).cell(colVa).value(classif);
-                }
-            });
-            const linesWritten = allEntries.length;
-
-            // Force le téléchargement du workbook modifié
-            // Ajoute aussi une feuille 'Raw' contenant les données brutes (dates, durées ms/jours, VA/NVA)
-            try {
-                const rawSheet = workbook.addSheet('Raw');
-                const rawHeader = ['Tâche', 'Début', 'Fin', 'Durée (ms)', 'Durée (jours)', 'VA/NVA'];
-                rawHeader.forEach((h, i) => rawSheet.row(1).cell(i + 1).value(h));
-                let rr = 2;
-                allEntries.forEach(e => {
-                    const taskObj = e.task || null;
-                    const classif = taskObj && taskObj.hasOwnProperty('va') ? (taskObj.va ? 'VA' : 'NVA') : '';
-                    const startDate = e.startTime ? new Date(e.startTime) : null;
-                    const endDate = e.endTime ? new Date(e.endTime) : null;
-                    const durMs = e.duration || 0;
-                    const durDays = durMs / 86400000;
-                    rawSheet.row(rr).cell(1).value(e.taskTitle);
-                    if (startDate) rawSheet.row(rr).cell(2).value(startDate);
-                    if (endDate) rawSheet.row(rr).cell(3).value(endDate);
-                    rawSheet.row(rr).cell(4).value(durMs);
-                    rawSheet.row(rr).cell(5).value(durDays);
-                    rawSheet.row(rr).cell(6).value(classif);
-                    rr++;
-                });
-            } catch (_) { /* ignore if cannot add sheet */ }
-
-            const out = await workbook.outputAsync();
-            const blob = new Blob([out], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-            const date = new Date().toISOString().split('T')[0];
-            const filename = `suivi_operateur_${this.observationInfo.examineeName}_${date}_from_template.xlsx`;
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = filename;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-
-            // Update UI with number of lines written
-            try {
-                const statusEl = document.getElementById('exportStatus');
-                if (statusEl) statusEl.textContent = `Template détecté et rempli : ${linesWritten} ligne(s) ajoutée(s). Téléchargement déclenché.`;
-                alert(`Template rempli : ${linesWritten} ligne(s) ajoutée(s). Le fichier a été téléchargé.`);
-            } catch (_) { /* ignore UI update errors */ }
-
-            return true;
-        } catch (e) {
-            return false;
-        }
-    }
+    // _tryFillUserTemplateFromArrayBuffer removed — user upload support was removed from the UI
 }
 
 /**
