@@ -6,6 +6,8 @@ class TaskForm {
     this.setupEventListeners();
     // Charger l'état sauvegardé au démarrage
     this.loadFromStorage();
+    // Proposer une couleur au démarrage si rien n'est chargé
+    if (typeof this.updateSuggestedColor === "function") this.updateSuggestedColor();
   }
 
   initializeElements() {
@@ -71,6 +73,11 @@ class TaskForm {
       if (!field) return;
       field.addEventListener("input", debouncedSave);
     });
+
+    // Mettre à jour la couleur proposée dès que l'utilisateur prépare une nouvelle tâche
+    if (this.fields.taskTitle) {
+      this.fields.taskTitle.addEventListener("focus", () => this.updateSuggestedColor());
+    }
   }
 
   // Affiche un message discret de statut (toast-like)
@@ -122,6 +129,9 @@ class TaskForm {
     // Sauvegarde automatique après ajout de tâche
     this.saveToStorage();
 
+    // Mettre à jour la couleur proposée pour la prochaine tâche
+    if (typeof this.updateSuggestedColor === "function") this.updateSuggestedColor();
+
     const observationInfo = this.getObservationInfo();
     this.resetTaskFields();
     this.restoreObservationInfo(observationInfo);
@@ -137,9 +147,25 @@ class TaskForm {
     }
 
     // Toutes les couleurs de la palette sont prises -> générer une couleur distincte
-    const hue = Math.floor((Date.now() / 1000) % 360);
-    const color = `hsl(${hue},70%,50%)`;
-    return color;
+    // Stratégie: itérer des teintes par pas de 47° jusqu'à trouver une valeur non utilisée
+    let hue = (this.tasks.length * 47) % 360;
+    for (let i = 0; i < 360; i++) {
+      const candidate = `hsl(${hue},70%,50%)`;
+      if (!used.has(candidate)) return candidate;
+      hue = (hue + 47) % 360;
+    }
+    return `hsl(${Math.floor(Math.random() * 360)},70%,50%)`;
+  }
+
+  // Met à jour la couleur proposée dans le sélecteur (`buttonColor`) en choisissant
+  // la prochaine couleur non utilisée. Appelée après chargement / ajout / suppression.
+  updateSuggestedColor() {
+    try {
+      const next = this.getNextAvailableColor();
+      if (this.colorPicker) this.colorPicker.value = next;
+    } catch (err) {
+      console.error("Erreur updateSuggestedColor:", err);
+    }
   }
 
   getObservationInfo() {
@@ -154,8 +180,9 @@ class TaskForm {
     requestAnimationFrame(() => {
       this.fields.taskTitle.value = "";
       this.fields.taskDescription.value = "";
-      this.colorPicker.value = "#4CAF50";
-      this.colorHex.value = "#4CAF50";
+      const nextColor = this.getNextAvailableColor();
+      if (this.colorPicker) this.colorPicker.value = nextColor;
+      if (this.colorHex) this.colorHex.value = nextColor;
 
       this.fields.taskTitle.classList.remove("valid", "invalid");
       this.fields.taskDescription.classList.remove("valid", "invalid");
@@ -226,6 +253,8 @@ class TaskForm {
       }
       // Sauvegarde automatique après suppression de tâche
       this.saveToStorage();
+      // Mettre à jour la couleur proposée après suppression
+      if (typeof this.updateSuggestedColor === "function") this.updateSuggestedColor();
     };
   }
 
@@ -315,6 +344,8 @@ class TaskForm {
 
         restoredAnything = restoredAnything || this.tasks.length > 0;
         this.showStatus(`${this.tasks.length} tâche(s) restaurée(s)`);
+        // Mettre à jour la couleur proposée après restauration
+        if (typeof this.updateSuggestedColor === "function") this.updateSuggestedColor();
       }
 
       if (!restoredAnything) {

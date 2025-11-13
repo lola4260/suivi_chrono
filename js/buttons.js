@@ -3,6 +3,18 @@ class ButtonsPage {
     constructor() {
         this.tasks = Storage.get('tasks') || [];
         this.observationInfo = Storage.get('observationInfo');
+        this.defaultColors = [
+            "#4CAF50",
+            "#2196F3",
+            "#FF9800",
+            "#9C27B0",
+            "#F44336",
+            "#795548",
+            "#03A9F4",
+            "#8BC34A",
+            "#FFC107",
+            "#607D8B"
+        ];
 
         this.initializeElements();
         this.setupPage();
@@ -102,6 +114,9 @@ class ButtonsPage {
             e.preventDefault();
             e.stopPropagation();
             document.getElementById('addTaskModal').style.display = 'block';
+            // Pré-remplir la couleur avec une nouvelle couleur non utilisée
+            const colorInput = document.getElementById('taskColor');
+            if (colorInput) colorInput.value = this.getNextAvailableColor();
             return false;
         };
 
@@ -145,6 +160,20 @@ class ButtonsPage {
                 return false;
             };
         }
+    }
+
+    getNextAvailableColor() {
+        const used = new Set((this.tasks || []).map(t => (t && t.color) || ''));
+        for (const c of this.defaultColors) {
+            if (!used.has(c)) return c;
+        }
+        let hue = (this.tasks.length * 47) % 360;
+        for (let i = 0; i < 360; i++) {
+            const candidate = `hsl(${hue},70%,50%)`;
+            if (!used.has(candidate)) return candidate;
+            hue = (hue + 47) % 360;
+        }
+        return `hsl(${Math.floor(Math.random() * 360)},70%,50%)`;
     }
 }
 
