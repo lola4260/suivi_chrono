@@ -23,6 +23,20 @@ class TaskForm {
       examDate: document.getElementById("examDate"),
     };
 
+    // Palette de couleurs par défaut (ordre de préférence)
+    this.defaultColors = [
+      "#4CAF50",
+      "#2196F3",
+      "#FF9800",
+      "#9C27B0",
+      "#F44336",
+      "#795548",
+      "#03A9F4",
+      "#8BC34A",
+      "#FFC107",
+      "#607D8B"
+    ];
+
     // Si l'input `colorHex` n'existe pas dans le HTML, le créer en hidden
     if (!this.colorHex && this.taskForm) {
       const hidden = document.createElement("input");
@@ -87,10 +101,14 @@ class TaskForm {
   handleSubmit(e) {
     e.preventDefault();
 
+    // Choisit automatiquement une couleur non utilisée pour le nouveau bouton
+    const chosenColor = this.getNextAvailableColor();
+    if (this.colorPicker) this.colorPicker.value = chosenColor;
+
     const task = {
       title: this.fields.taskTitle.value,
       description: this.fields.taskDescription.value,
-      color: this.colorPicker.value,
+      color: chosenColor,
       id: Date.now(),
     };
 
@@ -108,6 +126,20 @@ class TaskForm {
     this.resetTaskFields();
     this.restoreObservationInfo(observationInfo);
     this.fields.taskTitle.focus();
+  }
+
+  // Retourne une couleur de la palette qui n'est pas encore utilisée par les tâches existantes.
+  // Si toutes les couleurs sont utilisées, génère une couleur HSL simple basée sur le temps.
+  getNextAvailableColor() {
+    const used = new Set(this.tasks.map((t) => (t && t.color) || ""));
+    for (const c of this.defaultColors) {
+      if (!used.has(c)) return c;
+    }
+
+    // Toutes les couleurs de la palette sont prises -> générer une couleur distincte
+    const hue = Math.floor((Date.now() / 1000) % 360);
+    const color = `hsl(${hue},70%,50%)`;
+    return color;
   }
 
   getObservationInfo() {
