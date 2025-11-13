@@ -39,23 +39,17 @@ class TaskForm {
       if (this.colorHex) this.colorHex.value = e.target.value;
     }, 100);
 
-    const debouncedSave = debounce(() => this.saveToStorage(), 500);
-
+    // NOTE: autosave disabled — save only when user clicks `Sauvegarder`.
     if (this.colorPicker) {
       this.colorPicker.addEventListener("input", (e) => {
         updateColor(e);
-        debouncedSave();
       });
     }
 
     this.taskForm.addEventListener("submit", (e) => this.handleSubmit(e));
     this.validateButton.addEventListener("click", () => this.handleValidation());
 
-    // Sauvegarde automatique sur modification des champs observateur/observation
-    Object.values(this.fields).forEach((field) => {
-      if (!field) return;
-      field.addEventListener("input", debouncedSave);
-    });
+    // Autosave disabled: do not attach input listeners that save automatically.
 
     // Boutons manuels de sauvegarde / restauration / effacement
     const saveBtn = document.getElementById("saveButton");
@@ -108,8 +102,7 @@ class TaskForm {
     fragment.appendChild(taskElement);
     this.tasksContainer.appendChild(fragment);
 
-    // Sauvegarder l'état après ajout de tâche
-    this.saveToStorage();
+    // Ne pas sauvegarder automatiquement ici — utilisateur doit cliquer "Sauvegarder"
 
     const observationInfo = this.getObservationInfo();
     this.resetTaskFields();
@@ -199,8 +192,7 @@ class TaskForm {
       if (index > -1) {
         this.tasks.splice(index, 1);
       }
-      // Sauvegarder l'état après suppression
-      this.saveToStorage();
+      // Ne pas sauvegarder automatiquement après suppression
     };
   }
 
