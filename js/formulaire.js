@@ -248,15 +248,40 @@ class TaskForm {
         this.showStatus("Informations d'observation restaurées");
       }
 
-      if (Array.isArray(tasks) && tasks.length > 0) {
-        this.tasks = tasks;
+      // Normalise et restaure les tâches quel que soit le format reçu
+      let normalizedTasks = null;
+      if (Array.isArray(tasks)) {
+        normalizedTasks = tasks;
+      } else if (typeof tasks === "string") {
+        try {
+          const parsed = JSON.parse(tasks);
+          if (Array.isArray(parsed)) normalizedTasks = parsed;
+        } catch (e) {
+          console.warn("[TaskForm] loadFromStorage: tasks is string but not JSON array", e);
+        }
+      } else if (tasks && typeof tasks === "object") {
+        normalizedTasks = Object.values(tasks);
+      }
+
+      if (Array.isArray(normalizedTasks)) {
+        this.tasks = normalizedTasks.map((t, i) => {
+          const id = t && (t.id || t._id) ? (t.id || t._id) : Date.now() + i;
+          return {
+            id,
+            title: (t && t.title) || "",
+            description: (t && t.description) || "",
+            color: (t && t.color) || "#4CAF50",
+          };
+        });
+
         this.tasksContainer.innerHTML = "";
-        tasks.forEach((task) => {
+        this.tasks.forEach((task) => {
           const taskEl = this.createTaskElement(task);
           this.tasksContainer.appendChild(taskEl);
         });
-        restoredAnything = true;
-        this.showStatus("Tâches restaurées");
+
+        restoredAnything = restoredAnything || this.tasks.length > 0;
+        this.showStatus(`${this.tasks.length} tâche(s) restaurée(s)`);
       }
 
       if (!restoredAnything) {
