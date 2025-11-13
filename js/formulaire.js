@@ -39,25 +39,24 @@ class TaskForm {
       if (this.colorHex) this.colorHex.value = e.target.value;
     }, 100);
 
-    // NOTE: autosave disabled — save only when user clicks `Sauvegarder`.
+    // Autosave enabled: sauvegarde débouncée sur modifications
+    const debouncedSave = debounce(() => this.saveToStorage(), 500);
+
     if (this.colorPicker) {
       this.colorPicker.addEventListener("input", (e) => {
         updateColor(e);
+        debouncedSave();
       });
     }
 
     this.taskForm.addEventListener("submit", (e) => this.handleSubmit(e));
     this.validateButton.addEventListener("click", () => this.handleValidation());
 
-    // Autosave disabled: do not attach input listeners that save automatically.
-
-    // Boutons manuels de sauvegarde / restauration / effacement
-    const saveBtn = document.getElementById("saveButton");
-    const restoreBtn = document.getElementById("restoreButton");
-    const clearBtn = document.getElementById("clearSaveButton");
-    if (saveBtn) saveBtn.addEventListener("click", () => this.saveToStorage());
-    if (restoreBtn) restoreBtn.addEventListener("click", () => this.loadFromStorage());
-    if (clearBtn) clearBtn.addEventListener("click", () => this.clearSavedStorage());
+    // Attacher les écouteurs d'input pour sauvegarder automatiquement
+    Object.values(this.fields).forEach((field) => {
+      if (!field) return;
+      field.addEventListener("input", debouncedSave);
+    });
   }
 
   // Affiche un message discret de statut (toast-like)
@@ -102,7 +101,8 @@ class TaskForm {
     fragment.appendChild(taskElement);
     this.tasksContainer.appendChild(fragment);
 
-    // Ne pas sauvegarder automatiquement ici — utilisateur doit cliquer "Sauvegarder"
+    // Sauvegarde automatique après ajout de tâche
+    this.saveToStorage();
 
     const observationInfo = this.getObservationInfo();
     this.resetTaskFields();
@@ -192,7 +192,8 @@ class TaskForm {
       if (index > -1) {
         this.tasks.splice(index, 1);
       }
-      // Ne pas sauvegarder automatiquement après suppression
+      // Sauvegarde automatique après suppression de tâche
+      this.saveToStorage();
     };
   }
 
