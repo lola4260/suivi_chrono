@@ -66,6 +66,31 @@ class TaskForm {
     if (clearBtn) clearBtn.addEventListener("click", () => this.clearSavedStorage());
   }
 
+  // Affiche un message discret de statut (toast-like)
+  showStatus(message, timeout = 2000) {
+    try {
+      let el = document.getElementById("saveStatus");
+      if (!el) {
+        el = document.createElement("div");
+        el.id = "saveStatus";
+        document.body.appendChild(el);
+      }
+      el.textContent = message;
+      el.style.display = "block";
+      el.style.position = "fixed";
+      el.style.right = "20px";
+      el.style.bottom = "20px";
+      el.style.background = "rgba(0,0,0,0.7)";
+      el.style.color = "#fff";
+      el.style.padding = "8px 12px";
+      el.style.borderRadius = "6px";
+      el.style.zIndex = 9999;
+      setTimeout(() => (el.style.display = "none"), timeout);
+    } catch (err) {
+      console.error("Erreur showStatus:", err);
+    }
+  }
+
   handleSubmit(e) {
     e.preventDefault();
 
@@ -208,6 +233,7 @@ class TaskForm {
       const observationInfo = this.getObservationInfo();
       Storage.set("observationInfo", observationInfo);
       Storage.set("tasks", this.tasks);
+      this.showStatus("Sauvegarde enregistrée");
     } catch (err) {
       console.error("Erreur lors de la sauvegarde :", err);
     }
@@ -228,6 +254,7 @@ class TaskForm {
           const taskEl = this.createTaskElement(task);
           this.tasksContainer.appendChild(taskEl);
         });
+        this.showStatus("Sauvegarde restaurée");
       }
     } catch (err) {
       console.error("Erreur lors du chargement de la sauvegarde :", err);
@@ -239,7 +266,7 @@ class TaskForm {
     try {
       Storage.remove("observationInfo");
       Storage.remove("tasks");
-      alert("Sauvegarde effacée");
+      this.showStatus("Sauvegarde effacée");
     } catch (err) {
       console.error("Erreur lors de l'effacement de la sauvegarde :", err);
     }
