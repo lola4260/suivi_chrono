@@ -225,6 +225,8 @@ class TaskForm {
       const observationInfo = this.getObservationInfo();
       Storage.set("observationInfo", observationInfo);
       Storage.set("tasks", this.tasks);
+      console.log("[TaskForm] saveToStorage - observationInfo:", observationInfo);
+      console.log("[TaskForm] saveToStorage - tasks:", this.tasks);
       this.showStatus("Sauvegarde enregistrée");
     } catch (err) {
       console.error("Erreur lors de la sauvegarde :", err);
@@ -236,17 +238,29 @@ class TaskForm {
     try {
       const obs = Storage.get("observationInfo");
       const tasks = Storage.get("tasks");
+      console.log("[TaskForm] loadFromStorage - observationInfo:", obs);
+      console.log("[TaskForm] loadFromStorage - tasks:", tasks);
 
-      if (obs) this.restoreObservationInfo(obs);
+      let restoredAnything = false;
+      if (obs) {
+        this.restoreObservationInfo(obs);
+        restoredAnything = true;
+        this.showStatus("Informations d'observation restaurées");
+      }
 
-      if (Array.isArray(tasks)) {
+      if (Array.isArray(tasks) && tasks.length > 0) {
         this.tasks = tasks;
         this.tasksContainer.innerHTML = "";
         tasks.forEach((task) => {
           const taskEl = this.createTaskElement(task);
           this.tasksContainer.appendChild(taskEl);
         });
-        this.showStatus("Sauvegarde restaurée");
+        restoredAnything = true;
+        this.showStatus("Tâches restaurées");
+      }
+
+      if (!restoredAnything) {
+        this.showStatus("Aucune sauvegarde trouvée");
       }
     } catch (err) {
       console.error("Erreur lors du chargement de la sauvegarde :", err);
