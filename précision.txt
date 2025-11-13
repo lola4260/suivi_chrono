@@ -1,7 +1,6 @@
 'formulaire' pour créer les boutons -> ajout des tâches pour le nombre de boutons et ce qu'il y a écrit sur les boutons
 (pouvoir perso les boutons)
 utilisateur est créateur (grâce au formulaire)
-serveur possible ?
 bouton + pour potentiellement ajouter des tâches même après avoir rempli le formulaire d'ajout des tâches
 html to pwa
 
@@ -18,8 +17,6 @@ temps moyen par activité - gauss
 graphique ciruclaires avec répartition des activités
 aller voir stacy pour les chronos actuels
 
-passage c# (à voir)
-
 ajouter un bouton pour dire si c'est valeur ajouté (VA) ou non valeur ajouté (NVA)
 ajouter un bouton pour commenter la tâche en cours
 adapter le rendu exel avec le exel envoyé par stacy
@@ -28,3 +25,8 @@ ajouter un menu déroulant pour les noms d'activité
 ajouter un bouton pause
 faire un guide
 ajouter la possibilité de faire des commentaires
+changer automatiquement la couleur du bouton
+ajouter un mode pour pouvoir mettre une tache en pause et lancer d'autres taches pendant ce temps
+il y a vraiment besoin d'un excel
+
+j'aimerai avoir un bouton pause sur chaque tâche. et je veux que quand une tache est en pause on puisse faire une autre tâche et donc que ça lance un autre chronomètre.

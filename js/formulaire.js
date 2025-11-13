@@ -4,6 +4,8 @@ class TaskForm {
     this.tasks = [];
     this.initializeElements();
     this.setupEventListeners();
+    // Charger l'état sauvegardé au démarrage
+    this.loadFromStorage();
   }
 
   initializeElements() {
@@ -20,18 +22,48 @@ class TaskForm {
       examinerName: document.getElementById("examinerName"),
       examDate: document.getElementById("examDate"),
     };
+
+    // Si l'input `colorHex` n'existe pas dans le HTML, le créer en hidden
+    if (!this.colorHex && this.taskForm) {
+      const hidden = document.createElement("input");
+      hidden.type = "hidden";
+      hidden.id = "colorHex";
+      hidden.value = this.colorPicker ? this.colorPicker.value : "#4CAF50";
+      this.taskForm.appendChild(hidden);
+      this.colorHex = hidden;
+    }
   }
 
   setupEventListeners() {
     const updateColor = debounce((e) => {
-      this.colorHex.value = e.target.value;
+      if (this.colorHex) this.colorHex.value = e.target.value;
     }, 100);
 
-    this.colorPicker.addEventListener("input", updateColor);
+    const debouncedSave = debounce(() => this.saveToStorage(), 500);
+
+    if (this.colorPicker) {
+      this.colorPicker.addEventListener("input", (e) => {
+        updateColor(e);
+        debouncedSave();
+      });
+    }
+
     this.taskForm.addEventListener("submit", (e) => this.handleSubmit(e));
-    this.validateButton.addEventListener("click", () =>
-      this.handleValidation()
-    );
+    this.validateButton.addEventListener("click", () => this.handleValidation());
+
+    // Sauvegarde automatique sur modification des champs observateur/observation
+    Object.values(this.fields).forEach((field) => {
+      if (!field) return;
+      field.addEventListener("input", debouncedSave);
+    });
+
+    // Boutons manuels de sauvegarde / restauration / effacement
+    const saveBtn = document.getElementById("saveButton");
+    const restoreBtn = document.getElementById("restoreButton");
+    const clearBtn = document.getElementById("clearSaveButton");
+    if (saveBtn) saveBtn.addEventListener("click", () => this.saveToStorage());
+    if (restoreBtn) restoreBtn.addEventListener("click", () => this.loadFromStorage());
+    if (clearBtn) clearBtn.addEventListener("click", () => this.clearSavedStorage());
   }
 
   handleSubmit(e) {
@@ -50,6 +82,9 @@ class TaskForm {
     const taskElement = this.createTaskElement(task);
     fragment.appendChild(taskElement);
     this.tasksContainer.appendChild(fragment);
+
+    // Sauvegarder l'état après ajout de tâche
+    this.saveToStorage();
 
     const observationInfo = this.getObservationInfo();
     this.resetTaskFields();
@@ -139,6 +174,8 @@ class TaskForm {
       if (index > -1) {
         this.tasks.splice(index, 1);
       }
+      // Sauvegarder l'état après suppression
+      this.saveToStorage();
     };
   }
 
@@ -163,6 +200,49 @@ class TaskForm {
     Storage.set("tasks", this.tasks);
 
     window.location.href = "button.html";
+  }
+
+  // Sauvegarde de l'état courant du formulaire et des tâches
+  saveToStorage() {
+    try {
+      const observationInfo = this.getObservationInfo();
+      Storage.set("observationInfo", observationInfo);
+      Storage.set("tasks", this.tasks);
+    } catch (err) {
+      console.error("Erreur lors de la sauvegarde :", err);
+    }
+  }
+
+  // Chargement de l'état sauvegardé (observationInfo + tasks)
+  loadFromStorage() {
+    try {
+      const obs = Storage.get("observationInfo");
+      const tasks = Storage.get("tasks");
+
+      if (obs) this.restoreObservationInfo(obs);
+
+      if (Array.isArray(tasks)) {
+        this.tasks = tasks;
+        this.tasksContainer.innerHTML = "";
+        tasks.forEach((task) => {
+          const taskEl = this.createTaskElement(task);
+          this.tasksContainer.appendChild(taskEl);
+        });
+      }
+    } catch (err) {
+      console.error("Erreur lors du chargement de la sauvegarde :", err);
+    }
+  }
+
+  // Efface la sauvegarde dans localStorage
+  clearSavedStorage() {
+    try {
+      Storage.remove("observationInfo");
+      Storage.remove("tasks");
+      alert("Sauvegarde effacée");
+    } catch (err) {
+      console.error("Erreur lors de l'effacement de la sauvegarde :", err);
+    }
   }
 }
 
