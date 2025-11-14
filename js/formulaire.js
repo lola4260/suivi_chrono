@@ -105,7 +105,11 @@ class TaskForm {
   handleSubmit(e) {
     e.preventDefault();
 
-    const chosenColor = this.getNextAvailableColor();
+    // Respect the user's chosen color; fall back to suggested if missing
+    const chosenColor =
+      (this.colorHex && this.colorHex.value) ||
+      (this.colorPicker && this.colorPicker.value) ||
+      this.getNextAvailableColor();
     if (this.colorPicker) this.colorPicker.value = chosenColor;
 
     const task = {
