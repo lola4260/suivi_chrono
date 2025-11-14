@@ -180,6 +180,7 @@ select {
     cursor: pointer;
     color: #666;
 }
+
 .close-modal:hover {
     color: #333;
 }
@@ -190,11 +191,13 @@ select {
 .modal .form-group {
     margin-bottom: 15px;
 }
+
 .modal label {
     display: block;
     margin-bottom: 5px;
     color: #333;
 }
+
 .modal input[type="text"],
 .modal textarea {
     width: 100%;
@@ -202,6 +205,7 @@ select {
     border: 1px solid #ddd;
     border-radius: 4px;
 }
+
 .modal input[type="color"] {
     padding: 2px;
     width: 60px;
@@ -230,6 +234,7 @@ select {
     background-color: #4CAF50;
     color: white;
 }
+
 .cancel-btn {
     background-color: #dc3545;
     color: white;
@@ -238,6 +243,7 @@ select {
 .submit-btn:hover {
     background-color: #45a049;
 }
+
 .cancel-btn:hover {
     background-color: #c82333;
 }
@@ -280,6 +286,7 @@ select {
     font-size: 16px;
     transition: background-color 0.3s;
 }
+
 .submit-button:hover {
     background-color: #45a049;
 }
@@ -305,12 +312,14 @@ select {
     min-width: 300px;
     margin: 20px auto;
     display: block;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
+
 .validate-button:hover {
     background-color: #1976D2;
     transform: translateY(-2px);
 }
+
 .validate-button:active {
     transform: translateY(0);
 }
@@ -343,9 +352,11 @@ input[type="color"] {
     border-radius: 8px;
     cursor: pointer;
 }
+
 input[type="color"]::-webkit-color-swatch-wrapper {
     padding: 0;
 }
+
 input[type="color"]::-webkit-color-swatch {
     border: none;
     border-radius: 8px;
@@ -381,13 +392,14 @@ input[type="color"]::-webkit-color-swatch {
     background: white;
     border-radius: 8px;
     overflow: hidden;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     transition: transform 0.2s;
     animation: fadeIn 0.3s ease;
 }
+
 .task-item:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .task-header {
@@ -397,6 +409,7 @@ input[type="color"]::-webkit-color-swatch {
     align-items: center;
     color: white;
 }
+
 .task-header h3 {
     margin: 0;
     font-size: 18px;
@@ -407,6 +420,7 @@ input[type="color"]::-webkit-color-swatch {
     padding: 15px 20px;
     background: white;
 }
+
 .task-body p {
     margin: 0;
     color: #666;
@@ -422,6 +436,7 @@ input[type="color"]::-webkit-color-swatch {
     opacity: 0.8;
     transition: opacity 0.2s;
 }
+
 .delete-task:hover {
     opacity: 1;
 }
@@ -434,6 +449,7 @@ input[type="color"]::-webkit-color-swatch {
         opacity: 0;
         transform: translateY(-20px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -445,6 +461,7 @@ input[type="color"]::-webkit-color-swatch {
         opacity: 1;
         transform: scale(1);
     }
+
     to {
         opacity: 0;
         transform: scale(0.9);
@@ -456,6 +473,7 @@ input[type="color"]::-webkit-color-swatch {
         opacity: 0;
         transform: scale(0.9);
     }
+
     to {
         opacity: 1;
         transform: scale(1);

@@ -4,10 +4,9 @@ class TaskForm {
     this.tasks = [];
     this.initializeElements();
     this.setupEventListeners();
-    // Charger l'état sauvegardé au démarrage
     this.loadFromStorage();
-    // Proposer une couleur au démarrage si rien n'est chargé
-    if (typeof this.updateSuggestedColor === "function") this.updateSuggestedColor();
+    if (typeof this.updateSuggestedColor === "function")
+      this.updateSuggestedColor();
   }
 
   initializeElements() {
@@ -25,7 +24,6 @@ class TaskForm {
       examDate: document.getElementById("examDate"),
     };
 
-    // Palette de couleurs par défaut (ordre de préférence)
     this.defaultColors = [
       "#4CAF50",
       "#2196F3",
@@ -36,10 +34,9 @@ class TaskForm {
       "#03A9F4",
       "#8BC34A",
       "#FFC107",
-      "#607D8B"
+      "#607D8B",
     ];
 
-    // Si l'input `colorHex` n'existe pas dans le HTML, le créer en hidden
     if (!this.colorHex && this.taskForm) {
       const hidden = document.createElement("input");
       hidden.type = "hidden";
@@ -55,7 +52,6 @@ class TaskForm {
       if (this.colorHex) this.colorHex.value = e.target.value;
     }, 100);
 
-    // Autosave enabled: sauvegarde débouncée sur modifications
     const debouncedSave = debounce(() => this.saveToStorage(), 500);
 
     if (this.colorPicker) {
@@ -66,21 +62,22 @@ class TaskForm {
     }
 
     this.taskForm.addEventListener("submit", (e) => this.handleSubmit(e));
-    this.validateButton.addEventListener("click", () => this.handleValidation());
+    this.validateButton.addEventListener("click", () =>
+      this.handleValidation()
+    );
 
-    // Attacher les écouteurs d'input pour sauvegarder automatiquement
     Object.values(this.fields).forEach((field) => {
       if (!field) return;
       field.addEventListener("input", debouncedSave);
     });
 
-    // Mettre à jour la couleur proposée dès que l'utilisateur prépare une nouvelle tâche
     if (this.fields.taskTitle) {
-      this.fields.taskTitle.addEventListener("focus", () => this.updateSuggestedColor());
+      this.fields.taskTitle.addEventListener("focus", () =>
+        this.updateSuggestedColor()
+      );
     }
   }
 
-  // Affiche un message discret de statut (toast-like)
   showStatus(message, timeout = 2000) {
     try {
       let el = document.getElementById("saveStatus");
@@ -108,7 +105,6 @@ class TaskForm {
   handleSubmit(e) {
     e.preventDefault();
 
-    // Choisit automatiquement une couleur non utilisée pour le nouveau bouton
     const chosenColor = this.getNextAvailableColor();
     if (this.colorPicker) this.colorPicker.value = chosenColor;
 
@@ -125,12 +121,10 @@ class TaskForm {
     const taskElement = this.createTaskElement(task);
     fragment.appendChild(taskElement);
     this.tasksContainer.appendChild(fragment);
-
-    // Sauvegarde automatique après ajout de tâche
     this.saveToStorage();
 
-    // Mettre à jour la couleur proposée pour la prochaine tâche
-    if (typeof this.updateSuggestedColor === "function") this.updateSuggestedColor();
+    if (typeof this.updateSuggestedColor === "function")
+      this.updateSuggestedColor();
 
     const observationInfo = this.getObservationInfo();
     this.resetTaskFields();
@@ -138,16 +132,12 @@ class TaskForm {
     this.fields.taskTitle.focus();
   }
 
-  // Retourne une couleur de la palette qui n'est pas encore utilisée par les tâches existantes.
-  // Si toutes les couleurs sont utilisées, génère une couleur HSL simple basée sur le temps.
   getNextAvailableColor() {
     const used = new Set(this.tasks.map((t) => (t && t.color) || ""));
     for (const c of this.defaultColors) {
       if (!used.has(c)) return c;
     }
 
-    // Toutes les couleurs de la palette sont prises -> générer une couleur distincte
-    // Stratégie: itérer des teintes par pas de 47° jusqu'à trouver une valeur non utilisée
     let hue = (this.tasks.length * 47) % 360;
     for (let i = 0; i < 360; i++) {
       const candidate = `hsl(${hue},70%,50%)`;
@@ -157,8 +147,6 @@ class TaskForm {
     return `hsl(${Math.floor(Math.random() * 360)},70%,50%)`;
   }
 
-  // Met à jour la couleur proposée dans le sélecteur (`buttonColor`) en choisissant
-  // la prochaine couleur non utilisée. Appelée après chargement / ajout / suppression.
   updateSuggestedColor() {
     try {
       const next = this.getNextAvailableColor();
@@ -251,10 +239,9 @@ class TaskForm {
       if (index > -1) {
         this.tasks.splice(index, 1);
       }
-      // Sauvegarde automatique après suppression de tâche
       this.saveToStorage();
-      // Mettre à jour la couleur proposée après suppression
-      if (typeof this.updateSuggestedColor === "function") this.updateSuggestedColor();
+      if (typeof this.updateSuggestedColor === "function")
+        this.updateSuggestedColor();
     };
   }
 
@@ -281,13 +268,15 @@ class TaskForm {
     window.location.href = "button.html";
   }
 
-  // Sauvegarde de l'état courant du formulaire et des tâches
   saveToStorage() {
     try {
       const observationInfo = this.getObservationInfo();
       Storage.set("observationInfo", observationInfo);
       Storage.set("tasks", this.tasks);
-      console.log("[TaskForm] saveToStorage - observationInfo:", observationInfo);
+      console.log(
+        "[TaskForm] saveToStorage - observationInfo:",
+        observationInfo
+      );
       console.log("[TaskForm] saveToStorage - tasks:", this.tasks);
       this.showStatus("Sauvegarde enregistrée");
     } catch (err) {
@@ -295,7 +284,6 @@ class TaskForm {
     }
   }
 
-  // Chargement de l'état sauvegardé (observationInfo + tasks)
   loadFromStorage() {
     try {
       const obs = Storage.get("observationInfo");
@@ -310,7 +298,6 @@ class TaskForm {
         this.showStatus("Informations d'observation restaurées");
       }
 
-      // Normalise et restaure les tâches quel que soit le format reçu
       let normalizedTasks = null;
       if (Array.isArray(tasks)) {
         normalizedTasks = tasks;
@@ -319,7 +306,10 @@ class TaskForm {
           const parsed = JSON.parse(tasks);
           if (Array.isArray(parsed)) normalizedTasks = parsed;
         } catch (e) {
-          console.warn("[TaskForm] loadFromStorage: tasks is string but not JSON array", e);
+          console.warn(
+            "[TaskForm] loadFromStorage: tasks is string but not JSON array",
+            e
+          );
         }
       } else if (tasks && typeof tasks === "object") {
         normalizedTasks = Object.values(tasks);
@@ -327,7 +317,7 @@ class TaskForm {
 
       if (Array.isArray(normalizedTasks)) {
         this.tasks = normalizedTasks.map((t, i) => {
-          const id = t && (t.id || t._id) ? (t.id || t._id) : Date.now() + i;
+          const id = t && (t.id || t._id) ? t.id || t._id : Date.now() + i;
           return {
             id,
             title: (t && t.title) || "",
@@ -344,8 +334,8 @@ class TaskForm {
 
         restoredAnything = restoredAnything || this.tasks.length > 0;
         this.showStatus(`${this.tasks.length} tâche(s) restaurée(s)`);
-        // Mettre à jour la couleur proposée après restauration
-        if (typeof this.updateSuggestedColor === "function") this.updateSuggestedColor();
+        if (typeof this.updateSuggestedColor === "function")
+          this.updateSuggestedColor();
       }
 
       if (!restoredAnything) {
@@ -356,7 +346,6 @@ class TaskForm {
     }
   }
 
-  // Efface la sauvegarde dans localStorage
   clearSavedStorage() {
     try {
       Storage.remove("observationInfo");
@@ -368,5 +357,4 @@ class TaskForm {
   }
 }
 
-// Instance unique du gestionnaire de formulaire
 const taskForm = new TaskForm();

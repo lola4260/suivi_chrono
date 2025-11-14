@@ -20,14 +20,11 @@ class Chronometer {
   }
 
   start(taskId) {
-    // If already running and the same action is triggered, finalize previous timing
     if (this.isRunning) {
       this.stop();
     }
 
-    // If currently paused, decide whether to resume or finalize+start new
     if (this.isPaused) {
-      // If clicking the same task (or no taskId provided), resume
       if (!taskId || taskId === this.currentTaskId) {
         this.isPaused = false;
         this.isRunning = true;
@@ -47,18 +44,12 @@ class Chronometer {
         return;
       }
 
-      // If clicking a different task while paused, finalize the paused segment
-      // (save to history) then proceed to start a new timing session for taskId.
-      // Use the current elapsedTime as-is for the saved segment.
       this.saveToHistory();
-      // clear paused state and reset elapsed before starting new session
       this.isPaused = false;
       this.elapsedTime = 0;
       this.currentTaskId = null;
-      // continue to normal start flow below to start the new task
     }
 
-    // Normal start of a new timing session
     this.isRunning = true;
     this.startTime = performance.now() - this.elapsedTime;
     this.currentTaskId = taskId;
@@ -93,27 +84,25 @@ class Chronometer {
     }
   }
 
-    pause() {
-      // Pause: stop updating the display but keep the currentTaskId and elapsedTime
-      if (this.isRunning) {
-        if (this.useRAF) {
-          cancelAnimationFrame(this.rafId);
-        } else {
-          clearInterval(this.intervalId);
-        }
-
-        this.isRunning = false;
-        this.isPaused = true;
-        this.elapsedTime = performance.now() - this.startTime;
-        this.updateButtonStyles();
-        return;
+  pause() {
+    if (this.isRunning) {
+      if (this.useRAF) {
+        cancelAnimationFrame(this.rafId);
+      } else {
+        clearInterval(this.intervalId);
       }
 
-      // If already paused, resume
-      if (this.isPaused) {
-        this.start();
-      }
+      this.isRunning = false;
+      this.isPaused = true;
+      this.elapsedTime = performance.now() - this.startTime;
+      this.updateButtonStyles();
+      return;
     }
+
+    if (this.isPaused) {
+      this.start();
+    }
+  }
 
   updateRAF() {
     if (!this.isRunning) return;
@@ -161,15 +150,14 @@ class Chronometer {
         }
       }
 
-      // Update pause button state/text if present
-      const pauseBtn = document.getElementById('pauseBtn');
+      const pauseBtn = document.getElementById("pauseBtn");
       if (pauseBtn) {
         if (this.isPaused) {
-          pauseBtn.classList.add('paused');
-          pauseBtn.textContent = 'Reprendre';
+          pauseBtn.classList.add("paused");
+          pauseBtn.textContent = "Reprendre";
         } else {
-          pauseBtn.classList.remove('paused');
-          pauseBtn.textContent = 'Pause';
+          pauseBtn.classList.remove("paused");
+          pauseBtn.textContent = "Pause";
         }
       }
     });

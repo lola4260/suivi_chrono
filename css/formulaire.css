@@ -74,18 +74,12 @@
     transition: border-color 0.3s ease;
 }
 
-/**
- * @subsection form-input-date Spécificité pour le champ de date
- */
 .form-group input[type="date"] {
     padding-right: 10px;
     min-height: 42px;
     line-height: 42px;
 }
 
-/**
- * @subsection form-input-focus Effet au focus
- */
 .form-group input[type="text"]:focus,
 .form-group input[type="date"]:focus {
     outline: none;
@@ -93,9 +87,6 @@
     box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.1);
 }
 
-/**
- * @subsection form-input-date-reset Réinitialisation du style natif
- */
 .form-group input[type="date"] {
     -webkit-appearance: none;
     appearance: none;

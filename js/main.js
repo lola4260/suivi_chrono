@@ -1,12 +1,9 @@
-// Wrapper autour de localStorage avec cache en mémoire.
 const StorageCache = {
   cache: new Map(),
-  // Stocke une valeur sous une clé donnée
   set(key, value) {
     this.cache.set(key, value);
     localStorage.setItem(key, JSON.stringify(value));
   },
-  // Récupère une valeur stockée
   get(key) {
     if (this.cache.has(key)) {
       return this.cache.get(key);
@@ -20,12 +17,10 @@ const StorageCache = {
     return null;
   },
 
-  // Supprime une valeur stockée
   remove(key) {
     this.cache.delete(key);
     localStorage.removeItem(key);
   },
-  // Vide complètement le cache et le localStorage
   clear() {
     this.cache.clear();
     localStorage.clear();
@@ -35,7 +30,6 @@ const StorageCache = {
 const Storage = StorageCache;
 const formatCache = new Map();
 
-// Formate une durée en millisecondes en chaîne "HH:MM:SS.CS".
 function formatDuration(duration) {
   if (formatCache.has(duration)) {
     return formatCache.get(duration);
@@ -61,7 +55,6 @@ function formatDuration(duration) {
   return formatted;
 }
 
-// Formate un timestamp en heure locale sous forme "HH:MM:SS".
 function formatTime(timestamp) {
   const date = new Date(timestamp);
   return date.toLocaleTimeString("fr-FR", {
@@ -71,7 +64,6 @@ function formatTime(timestamp) {
   });
 }
 
-// Valide les champs requis d'un formulaire HTML.
 function validateForm(formElement) {
   const requiredFields = formElement.querySelectorAll("[required]");
   let isValid = true;
@@ -88,7 +80,6 @@ function validateForm(formElement) {
   return isValid;
 }
 
-// Crée une fonction debouncée.
 function debounce(func, wait) {
   let timeout;
   return function executedFunction(...args) {
@@ -101,7 +92,6 @@ function debounce(func, wait) {
   };
 }
 
-// Crée une fonction throttlée.
 function throttle(func, limit) {
   let inThrottle;
   return function (...args) {

@@ -16,7 +16,6 @@
     gap: 10px;
 }
 
-/* Style des boutons */
 .value-type-button {
     padding: 8px 16px;
     border: none;
@@ -44,7 +43,6 @@
     color: white;
 }
 
-/* Style des tâches selon leur classification */
 .task-va {
     border-left: 4px solid #28a745 !important;
 }
@@ -53,7 +51,6 @@
     border-left: 4px solid #dc3545 !important;
 }
 
-/* Responsive design */
 @media (max-width: 768px) {
     .value-type-options {
         flex-direction: column;
