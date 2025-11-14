@@ -132,9 +132,11 @@ body {
 }
 
 .task-button.active {
-    border: 3px solid #fff;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-    transform: scale(1.05);
+    transform: translateY(-1px) scale(1.02);
+    /* Anneau discret et harmonieux */
+    box-shadow:
+        0 0 0 2px rgba(255, 255, 255, 0.9),
+        0 10px 14px rgba(0, 0, 0, 0.15);
 }
 
 /**

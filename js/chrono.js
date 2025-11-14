@@ -25,7 +25,7 @@ class Chronometer {
     }
 
     if (this.isPaused) {
-      if (!taskId || taskId === this.currentTaskId) {
+      if (!taskId || String(taskId) === this.currentTaskId) {
         this.isPaused = false;
         this.isRunning = true;
         this.startTime = performance.now() - this.elapsedTime;
@@ -52,7 +52,8 @@ class Chronometer {
 
     this.isRunning = true;
     this.startTime = performance.now() - this.elapsedTime;
-    this.currentTaskId = taskId;
+    // Normalise l'identifiant de tâche en chaîne pour correspondre à dataset.taskId
+    this.currentTaskId = String(taskId);
 
     if (!this.displayElements.length) {
       this.cacheDisplayElements();
