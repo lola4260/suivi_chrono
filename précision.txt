@@ -30,7 +30,7 @@ ajouter un mode pour pouvoir mettre une tache en pause et lancer d'autres taches
 il y a vraiment besoin d'un excel
 
 j'aimerai avoir un bouton pause sur chaque tâche. et je veux que quand une tache est en pause on puisse faire une autre tâche et donc que ça lance un autre chronomètre.
-
+passer en apk
 
 Chargement
 Panne
@@ -38,3 +38,68 @@ Contrôle visuel
 Pause
 Changement d'emaballage
 Dépannage
+
+
+
+
+Facilité: plutôt simple avec Capacitor + Android Studio.
+Durée:
+1–2h: premier build “debug” sur téléphone.
+0,5–1 journée: build “release” signé + fiche Play Store (icônes, screenshots, Data Safety, politique de confidentialité).
+Revue Google: 1 à 7 jours (variable).
+Format Play Store: Google exige un AAB pour la mise en ligne. Tu peux générer un APK pour test local, mais l’upload officiel se fait en AAB.
+Étapes concrètes (Windows)
+
+Prérequis
+Installer Android Studio (inclut SDK, Gradle).
+Installer Java 17 (JDK 17).
+Node.js 18+.
+Ouvrir Android Studio une fois pour télécharger les SDKs Android recommandés.
+Connecter un téléphone (mode développeur + débogage USB) ou créer un émulateur.
+Vérifier/ajuster la config Capacitor
+Ton capacitor.config.json est déjà OK côté appId/appName. Seul point: webDir est www, mais tu n’as pas de dossier www. Choisis UNE des 2 options:
+Option A (simple): change webDir à "." pour pointer vers la racine où se trouve index.html.
+Option B: créer un dossier www et y copier ton site (tout index.html, html, css, js, assets).
+Installer dépendances et ajouter Android
+Synchroniser les assets web
+Si tu as choisi Option A (webDir = "."): rien à copier.
+Si tu as choisi Option B (webDir = "www"): copie tes fichiers dedans avant de synchroniser.
+Ouvrir dans Android Studio
+Android Studio va générer l’index, télécharger des composants si besoin.
+Paramétrer l’app dans Android Studio
+Nom du package (déjà dans appId: com.suivischrono.app).
+VersionName / VersionCode (fichier app/build.gradle(.kts)).
+Icônes/adaptive icons (tu peux utiliser un SVG 512×512; Capacitor propose npx @capacitor/assets generate pour générer les ressources si besoin).
+Signer la release:
+Générer un keystore:
+Dans Android Studio: Build > Generate Signed Bundle/APK > Android App Bundle > Create new… (ou utiliser le keystore ci-dessus) > renseigner mots de passe > Next.
+Compiler
+Pour test local rapide (APK debug):
+Build > Build APK(s) → installe sur ton téléphone.
+Pour le Play Store (AAB release signé):
+Build > Generate Signed Bundle/APK… > Android App Bundle (AAB) > Release.
+Le AAB est dans android/app/release/.
+Play Console (mise en ligne)
+Créer l’application (titre, langue, fiche Store).
+App bundles: uploader le .aab.
+Remplir “Data safety” (déclaration d’usage de données).
+Fournir icône 512×512, featured graphic, captures d’écran (téléphone).
+Politique de confidentialité (URL — même simple page hébergée).
+Choisir une piste (internal/closed/open testing ou production) et soumettre.
+Points d’attention
+
+Service Worker: tu as androidScheme: "https" (parfait). Le SW s’enregistre en contexte sécurisé; garde les chemins relatifs (../js/service-worker.js) — OK si la structure des dossiers est identique dans le webDir.
+manifest.json start_url: “html/formulaire.html”. Ça convient dans l’app. Le flux “export → nouvelle session” est déjà géré côté code.
+AAB vs APK: Play exige AAB. Conserve un APK pour tests internes si tu veux.
+Option TWA (si tu préfères héberger la PWA)
+
+Alternative: publier une PWA en “Trusted Web Activity” (outil bubblewrap). Utile si tu veux héberger le site et juste le “wrapper”. Mais comme ton app fonctionne hors-ligne/local, Capacitor reste le meilleur choix.
+Estimation réaliste
+
+Avec Android Studio déjà installé: tu peux avoir un APK de test en 60–90 minutes.
+Passage Play Store: si tes assets (icône, screenshots, texte de fiche, politique) sont prêts, compte une demi-journée pour signer, générer AAB, remplir la fiche, et soumettre.
+Tu veux que je:
+
+Ajuste capacitor.config.json pour webDir et ajoute un script npm run android:build?
+Ajoute une petite doc README.md avec les commandes Windows pour build/signature?
+Génère les assets d’icônes Android depuis ton SVG/PNG actuel?
