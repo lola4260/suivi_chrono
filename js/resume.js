@@ -418,6 +418,7 @@ class SummaryPage {
       btnNativeCharts.addEventListener("click", async () => {
         try {
           await this.exportToExcelWithNativeChartsTemplate();
+          Storage.set("exported", true);
         } catch (e) {
           alert(
             "Erreur lors de l'export - regarde la console pour plus de détails."
@@ -430,6 +431,7 @@ class SummaryPage {
         btnCharts.addEventListener("click", async () => {
           try {
             await this.exportToExcelWithCharts();
+            Storage.set("exported", true);
           } catch (e) {
             alert(
               "Erreur lors de l'export des graphiques - regarde la console pour plus de détails."
@@ -437,6 +439,27 @@ class SummaryPage {
           }
         });
       }
+    }
+
+    // Bouton pour revenir au formulaire
+    const goToForm = document.getElementById("goToFormButton");
+    if (goToForm) {
+      goToForm.addEventListener("click", () => {
+        window.location.href = "formulaire.html";
+      });
+    }
+
+    // Bouton Nouvelle session (reset complet)
+    const newSession = document.getElementById("newSessionButton");
+    if (newSession) {
+      newSession.addEventListener("click", () => {
+        try {
+          Storage.clear();
+        } catch (_) {
+          try { localStorage.clear(); } catch (_) {}
+        }
+        window.location.href = "formulaire.html";
+      });
     }
   }
 
@@ -674,6 +697,7 @@ class SummaryPage {
     const date = new Date().toISOString().split("T")[0];
     const filename = `suivi_operateur_${this.observationInfo.examineeName}_${date}.xlsx`;
     XLSX.writeFile(wb, filename);
+    try { Storage.set("exported", true); } catch (_) {}
   }
 
   downloadBlankTemplateWorkbook() {

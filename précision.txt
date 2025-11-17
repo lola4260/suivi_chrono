@@ -30,3 +30,11 @@ ajouter un mode pour pouvoir mettre une tache en pause et lancer d'autres taches
 il y a vraiment besoin d'un excel
 
 j'aimerai avoir un bouton pause sur chaque tâche. et je veux que quand une tache est en pause on puisse faire une autre tâche et donc que ça lance un autre chronomètre.
+
+
+Chargement
+Panne
+Contrôle visuel
+Pause
+Changement d'emaballage
+Dépannage

@@ -148,6 +148,21 @@
     width: 100%;
 }
 
+.resume-actions {
+    margin-top: 10px;
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+}
+
+.reset-button {
+    background-color: #dc3545;
+}
+
+.reset-button:hover {
+    background-color: #c82333;
+}
+
 .export-button {
     padding: 15px 25px;
     border: none;

@@ -1,3 +1,14 @@
+// Réinitialisation automatique si une session précédente a été exportée
+(function () {
+  try {
+    const raw = localStorage.getItem('exported');
+    const exported = raw ? JSON.parse(raw) === true : false;
+    if (exported) {
+      localStorage.clear();
+    }
+  } catch (_) {}
+})();
+
 // Gestion du formulaire de configuration des tâches
 class TaskForm {
   constructor() {

@@ -1,10 +1,45 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
   <head>
-    <meta http-equiv="refresh" content="0; URL=html/formulaire.html" />
-    <title>Redirection...</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Redirection…</title>
+    <script>
+      (function () {
+        try {
+          const parse = (k) => {
+            const v = localStorage.getItem(k);
+            try { return v == null ? null : JSON.parse(v); } catch (_) { return v; }
+          };
+
+          const exported = parse('exported') === true;
+          if (exported) {
+            // Session précédente exportée: on repart de zéro
+            localStorage.clear();
+            window.location.replace('html/formulaire.html');
+            return;
+          }
+
+          const tasks = parse('tasks');
+          const history = parse('timeHistory');
+          const hasTasks = Array.isArray(tasks) && tasks.length > 0;
+          const hasHistory = Array.isArray(history) && history.length > 0;
+          const hasData = hasTasks || hasHistory;
+
+          // Si pas exporté et il existe des données, retourner sur la page des données (résumé).
+          // Sinon, démarrer au formulaire.
+          window.location.replace(hasData ? 'html/resume.html' : 'html/formulaire.html');
+        } catch (e) {
+          // En cas de souci, on retombe sur le formulaire
+          window.location.replace('html/formulaire.html');
+        }
+      })();
+    </script>
   </head>
   <body>
-    <p>Si vous n'êtes pas redirigé automatiquement, <a href="html/formulaire.html">cliquez ici</a>.</p>
+    <p>Redirection en cours… Si rien ne se passe,
+      <a href="html/formulaire.html">ouvrir le formulaire</a> ou
+      <a href="html/resume.html">ouvrir le résumé</a>.
+    </p>
   </body>
-</html>
+  </html>
