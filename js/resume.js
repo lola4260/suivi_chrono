@@ -610,6 +610,59 @@ class SummaryPage {
     }
     const wsGauss = XLSX.utils.aoa_to_sheet(gaussSheetData);
 
+    // Séquences (mesures chronologiques détaillées)
+    const sequencesData = [["Séquences"], [
+      "Séquence",
+      "Cycle",
+      "Horodate",
+      "Durée (seconde)",
+      "Durée (Cmin)",
+      "Activité",
+      "Remarque",
+    ]];
+    const seqEntries = [];
+    Object.values(this.taskSummaries).forEach((s) =>
+      s.entries.forEach((e) => seqEntries.push({ taskTitle: s.task.title, ...e }))
+    );
+    seqEntries.sort((a, b) => a.startTime - b.startTime);
+    seqEntries.forEach((e, i) => {
+      const ms = e.duration || 0;
+      const secondsTime = ms / 86400000; // fraction de jour pour format mm:ss.00
+      const cmin = Math.round((((ms) / 60000) * 100) * 10) / 10; // 1 décimale
+      let timeFraction = "";
+      if (e.startTime) {
+        const d = new Date(e.startTime);
+        const h = d.getHours();
+        const m = d.getMinutes();
+        const s = d.getSeconds();
+        const ms = d.getMilliseconds();
+        timeFraction = (h * 3600000 + m * 60000 + s * 1000 + ms) / 86400000;
+      }
+      sequencesData.push([
+        i + 1,
+        e.cycleIndex || "",
+        timeFraction,
+        secondsTime,
+        cmin,
+        e.taskTitle,
+        "",
+      ]);
+    });
+    const wsSequences = XLSX.utils.aoa_to_sheet(sequencesData);
+    // Formats: C = hh:mm:ss.00, D = mm:ss.00, E = 0.0
+    try {
+      const startRow = 3;
+      const endRow = sequencesData.length + 1; // aoa_to_sheet may not count title row; safe iterate using data length
+      for (let r = startRow; r < startRow + seqEntries.length; r++) {
+        const cAddr = `C${r}`;
+        const dAddr = `D${r}`;
+        const eAddr = `E${r}`;
+        if (wsSequences[cAddr]) wsSequences[cAddr].z = "hh:mm:ss.00";
+        if (wsSequences[dAddr]) wsSequences[dAddr].z = "mm:ss.00";
+        if (wsSequences[eAddr]) wsSequences[eAddr].z = "0.0";
+      }
+    } catch (_) {}
+
     // Append
     XLSX.utils.book_append_sheet(wb, wsInfo, "Résumé");
     XLSX.utils.book_append_sheet(wb, wsStats, "Statistiques");
@@ -619,6 +672,7 @@ class SummaryPage {
     XLSX.utils.book_append_sheet(wb, wsVaNva, "VA_NVA");
     XLSX.utils.book_append_sheet(wb, wsGauss, "Gauss");
     XLSX.utils.book_append_sheet(wb, wsCycles, "Cycles");
+    XLSX.utils.book_append_sheet(wb, wsSequences, "Séquences");
 
     const date = new Date().toISOString().split("T")[0];
     const filename = `suivi_operateur_${this.observationInfo.examineeName}_${date}.xlsx`;
@@ -930,6 +984,41 @@ class SummaryPage {
     }
     wsGauss.addRows(gaussRows);
 
+    // Séquences (mesures chronologiques détaillées)
+    const wsSeq = workbook.addWorksheet("Séquences");
+    const seqHeader = [
+      "Séquence",
+      "Cycle",
+      "Horodate",
+      "Durée (seconde)",
+      "Durée (Cmin)",
+      "Activité",
+      "Remarque",
+    ];
+    wsSeq.addRow(seqHeader);
+    const seqEntries = [];
+    Object.values(this.taskSummaries).forEach((s) =>
+      s.entries.forEach((e) => seqEntries.push({ taskTitle: s.task.title, ...e }))
+    );
+    seqEntries.sort((a, b) => a.startTime - b.startTime);
+    seqEntries.forEach((e, i) => {
+      const startDate = e.startTime ? new Date(e.startTime) : null;
+      const secondsTime = (e.duration || 0) / 86400000; // fraction de jour pour mm:ss.00
+      const cmin = Math.round((((e.duration || 0) / 60000) * 100) * 10) / 10; // 1 décimale
+      wsSeq.addRow([
+        i + 1,
+        e.cycleIndex || "",
+        startDate,
+        secondsTime,
+        cmin,
+        e.taskTitle,
+        "",
+      ]);
+    });
+    wsSeq.getColumn(3).numFmt = "hh:mm:ss.00";
+    wsSeq.getColumn(4).numFmt = "mm:ss.00";
+    wsSeq.getColumn(5).numFmt = "0.0";
+
     const wsCharts = workbook.addWorksheet("Graphiques");
     let currentRow = 1;
     const addChartImage = (title, chartInstance) => {
@@ -1159,6 +1248,47 @@ class SummaryPage {
         cyclesSheet.cell(rc, 4).value(durMs);
         cyclesSheet.cell(rc, 5).value(durDays);
         rc++;
+      });
+
+      // Add sequences sheet (chronological measurements)
+      const seqSheet = workbook.addSheet("Séquences");
+      const seqHeader = [
+        "Séquence",
+        "Cycle",
+        "Horodate",
+        "Durée (seconde)",
+        "Durée (Cmin)",
+        "Activité",
+        "Remarque",
+      ];
+      seqHeader.forEach((h, i) => seqSheet.cell(1, i + 1).value(h));
+      let rs = 2;
+      const seqEntries = [];
+      Object.values(this.taskSummaries).forEach((s) =>
+        s.entries.forEach((e) => seqEntries.push({ taskTitle: s.task.title, ...e }))
+      );
+      seqEntries.sort((a, b) => a.startTime - b.startTime);
+      seqEntries.forEach((e, i) => {
+        const d = e.startTime ? new Date(e.startTime) : null;
+        const ms = e.duration || 0;
+        const minutes = Math.floor(ms / 60000);
+        const seconds = Math.floor((ms % 60000) / 1000);
+        const millis = ms % 1000;
+        const cmin = Math.round((((ms) / 60000) * 100) * 10) / 10; // 1 décimale
+        seqSheet.cell(rs, 1).value(i + 1);
+        seqSheet.cell(rs, 2).value(e.cycleIndex || "");
+        if (d) {
+          const timeOnly = new Date(1899, 11, 30, d.getHours(), d.getMinutes(), d.getSeconds(), d.getMilliseconds());
+          seqSheet.cell(rs, 3).value(timeOnly);
+          seqSheet.cell(rs, 3).style("numberFormat", "hh:mm:ss.00");
+        }
+        const secondsTime = new Date(1899, 11, 30, 0, minutes, seconds, millis);
+        seqSheet.cell(rs, 4).value(secondsTime);
+        seqSheet.cell(rs, 4).style("numberFormat", "mm:ss.00");
+        seqSheet.cell(rs, 5).value(cmin).style("numberFormat", "0.0");
+        seqSheet.cell(rs, 6).value(e.taskTitle);
+        seqSheet.cell(rs, 7).value("");
+        rs++;
       });
     } catch (e) {}
 
