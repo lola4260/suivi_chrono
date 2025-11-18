@@ -431,13 +431,11 @@ class SummaryPage {
   }
 
   setupExportButtons() {
-    const btnNativeCharts = document.getElementById(
-      "exportExcelNativeChartsButton"
-    );
-    if (btnNativeCharts) {
-      btnNativeCharts.addEventListener("click", async () => {
+    const btnCharts = document.getElementById("exportExcelWithChartsButton");
+    if (btnCharts) {
+      btnCharts.addEventListener("click", async () => {
         try {
-          await this.exportToExcelWithNativeChartsTemplate();
+          await this.exportToExcelWithCharts();
           Storage.set("exported", true);
         } catch (e) {
           alert(
@@ -445,20 +443,6 @@ class SummaryPage {
           );
         }
       });
-
-      const btnCharts = document.getElementById("exportExcelWithChartsButton");
-      if (btnCharts) {
-        btnCharts.addEventListener("click", async () => {
-          try {
-            await this.exportToExcelWithCharts();
-            Storage.set("exported", true);
-          } catch (e) {
-            alert(
-              "Erreur lors de l'export des graphiques - regarde la console pour plus de détails."
-            );
-          }
-        });
-      }
     }
 
     // Bouton pour revenir au formulaire
