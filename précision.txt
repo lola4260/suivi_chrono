@@ -103,3 +103,13 @@ Tu veux que je:
 Ajuste capacitor.config.json pour webDir et ajoute un script npm run android:build?
 Ajoute une petite doc README.md avec les commandes Windows pour build/signature?
 Génère les assets d’icônes Android depuis ton SVG/PNG actuel?
+
+
+
+Ajouter pouvoir modifier les taches en les faisant
+Remarques
+ajouter les flag
+lancer le chrono et ensuite l'associer à une tache - vu avec stacy : à ne pas faire
+top cycle
+Fonctionnement en hors réseau
+faire une base départ (préconfig boutons)

@@ -4,6 +4,7 @@ class SummaryPage {
     this.observationInfo = Storage.get("observationInfo");
     this.tasks = Storage.get("tasks") || [];
     this.timeHistory = Storage.get("timeHistory") || [];
+    this.cycleHistory = Storage.get("cycleHistory") || [];
     this.taskSummaries = {};
     this.initializePage();
     this.createCharts();
@@ -306,6 +307,8 @@ class SummaryPage {
         task: task,
         entries: [],
         totalTime: 0,
+        cycles: [],
+        totalCycleTime: 0,
       };
     });
 
@@ -313,6 +316,13 @@ class SummaryPage {
       if (this.taskSummaries[entry.taskId]) {
         this.taskSummaries[entry.taskId].entries.push(entry);
         this.taskSummaries[entry.taskId].totalTime += entry.duration;
+      }
+    });
+
+    this.cycleHistory.forEach((c) => {
+      if (this.taskSummaries[c.taskId]) {
+        this.taskSummaries[c.taskId].cycles.push(c);
+        this.taskSummaries[c.taskId].totalCycleTime += c.duration || 0;
       }
     });
   }
@@ -348,14 +358,24 @@ class SummaryPage {
                 </div>
                 <div class="task-summary-body">
                     <p>${summary.task.description || "Aucune description"}</p>
+                  <p><strong>Cycles</strong> : ${summary.cycles.length} ${summary.cycles.length > 0 ? `(moyenne: ${formatDuration(Math.round(summary.totalCycleTime / summary.cycles.length))})` : ""}</p>
+                  ${summary.cycles.length > 0 ? `
+                  <div class="cycle-entries">
+                    ${summary.cycles.map((c, i) => `
+                      <div class="cycle-entry">
+                        <span>Cycle #${i + 1} — ${formatTime(c.timestamp)}</span>
+                        <span>${formatDuration(c.duration)}</span>
+                      </div>
+                    `).join("")}
+                  </div>
+                  ` : ""}
                     <div class="time-entries">
                         ${summary.entries
                           .map(
                             (entry) => `
                             <div class="time-entry">
-                                <span>De ${formatTime(
-                                  entry.startTime
-                                )} à ${formatTime(entry.endTime)}</span>
+                              ${entry.cycleIndex ? `<span class=\"cycle-badge\">Cycle #${entry.cycleIndex}</span>` : ""}
+                                <span>De ${formatTime(entry.startTime)} à ${formatTime(entry.endTime)}</span>
                                 <span>${formatDuration(entry.duration)}</span>
                             </div>
                         `
@@ -466,226 +486,147 @@ class SummaryPage {
   exportToExcel() {
     const wb = XLSX.utils.book_new();
 
+    // Résumé
     const infoData = [
       ["Informations de la session"],
       ["Collaborateur", this.observationInfo.examineeName],
       ["Observateur", this.observationInfo.examinerName],
-      [
-        "Date",
-        new Date(this.observationInfo.examDate).toLocaleDateString("fr-FR"),
-      ],
+      ["Date", new Date(this.observationInfo.examDate).toLocaleDateString("fr-FR")],
       [],
       ["Résumé des temps par tâche"],
-      ["Tâche", "Temps total", "Pourcentage", "Classification"],
+      ["Tâche", "Temps total", "Pourcentage", "Classification", "Cycles (nb)", "Cycle moyen"],
     ];
 
     let totalSessionTime = 0;
-    Object.values(this.taskSummaries).forEach((summary) => {
-      totalSessionTime += summary.totalTime;
-    });
+    Object.values(this.taskSummaries).forEach((s) => (totalSessionTime += s.totalTime));
 
-    Object.values(this.taskSummaries).forEach((summary) => {
-      const percentage = ((summary.totalTime / totalSessionTime) * 100).toFixed(
-        2
-      );
-      const classif = summary.task.hasOwnProperty("va")
-        ? summary.task.va
-          ? "VA"
-          : "NVA"
-        : "";
+    Object.values(this.taskSummaries).forEach((s) => {
+      const percentage = ((s.totalTime / (totalSessionTime || 1)) * 100).toFixed(2);
+      const classif = s.task.hasOwnProperty("va") ? (s.task.va ? "VA" : "NVA") : "";
+      const cyclesCount = s.cycles.length;
+      const avgCycle = cyclesCount ? Math.round(s.totalCycleTime / cyclesCount) : 0;
       infoData.push([
-        summary.task.title,
-        formatDuration(summary.totalTime),
+        s.task.title,
+        formatDuration(s.totalTime),
         `${percentage}%`,
         classif,
+        cyclesCount,
+        formatDuration(avgCycle),
       ]);
     });
 
-    infoData.push(
-      [],
-      ["Temps total de la session", formatDuration(totalSessionTime)]
-    );
+    infoData.push([], ["Temps total de la session", formatDuration(totalSessionTime)]);
 
-    const statsData = [
-      ["Statistiques détaillées par tâche"],
-      [
-        "Tâche",
-        "Temps total",
-        "Nombre d'occurrences",
-        "Temps moyen",
-        "Temps minimum",
-        "Temps maximum",
-        "Pourcentage du temps total",
-        "Classification",
-      ],
-    ];
+    // Statistiques détaillées
+    const statsData = [[
+      "Statistiques détaillées par tâche",
+    ], [
+      "Tâche",
+      "Temps total",
+      "Nombre d'occurrences",
+      "Temps moyen",
+      "Temps minimum",
+      "Temps maximum",
+      "Pourcentage du temps total",
+      "Classification",
+      "Cycles (nb)",
+      "Cycle moyen",
+    ]];
 
-    Object.values(this.taskSummaries).forEach((summary) => {
-      const durations = summary.entries.map((entry) => entry.duration);
-      const avgTime =
-        durations.length > 0 ? summary.totalTime / durations.length : 0;
-      const minTime = durations.length > 0 ? Math.min(...durations) : 0;
-      const maxTime = durations.length > 0 ? Math.max(...durations) : 0;
-      const percentage =
-        ((summary.totalTime / totalSessionTime) * 100).toFixed(2) + "%";
-      const classif = summary.task.hasOwnProperty("va")
-        ? summary.task.va
-          ? "VA"
-          : "NVA"
-        : "";
-
+    Object.values(this.taskSummaries).forEach((s) => {
+      const durations = s.entries.map((e) => e.duration);
+      const avgTime = durations.length ? s.totalTime / durations.length : 0;
+      const minTime = durations.length ? Math.min(...durations) : 0;
+      const maxTime = durations.length ? Math.max(...durations) : 0;
+      const percentage = ((s.totalTime / (totalSessionTime || 1)) * 100).toFixed(2) + "%";
+      const classif = s.task.hasOwnProperty("va") ? (s.task.va ? "VA" : "NVA") : "";
+      const cyclesCount = s.cycles.length;
+      const avgCycle = cyclesCount ? Math.round(s.totalCycleTime / cyclesCount) : 0;
       statsData.push([
-        summary.task.title,
-        formatDuration(summary.totalTime),
+        s.task.title,
+        formatDuration(s.totalTime),
         durations.length,
         formatDuration(avgTime),
         formatDuration(minTime),
         formatDuration(maxTime),
         percentage,
         classif,
+        cyclesCount,
+        formatDuration(avgCycle),
       ]);
 
       if (durations.length >= 2) {
         statsData.push([]);
-        statsData.push([`Distribution des temps pour : ${summary.task.title}`]);
+        statsData.push([`Distribution des temps pour : ${s.task.title}`]);
         statsData.push(["Mesure", "Durée", "Écart par rapport à la moyenne"]);
-
-        durations.forEach((duration, index) => {
-          const ecart = duration - avgTime;
-          statsData.push([
-            `#${index + 1}`,
-            formatDuration(duration),
-            formatDuration(ecart),
-          ]);
+        durations.forEach((d, i) => {
+          const ecart = d - avgTime;
+          statsData.push([`#${i + 1}`, formatDuration(d), formatDuration(ecart)]);
         });
         statsData.push([]);
       }
     });
 
-    const detailsData = [
-      ["Détails chronologiques des activités"],
-      ["Tâche", "Début", "Fin", "Durée"],
-    ];
-
+    // Chronologie
+    const detailsData = [["Détails chronologiques des activités"], ["Tâche", "Cycle #", "Début", "Fin", "Durée"]];
     const allEntries = [];
-    Object.values(this.taskSummaries).forEach((summary) => {
-      summary.entries.forEach((entry) => {
-        allEntries.push({
-          taskTitle: summary.task.title,
-          ...entry,
-        });
-      });
-    });
-
+    Object.values(this.taskSummaries).forEach((s) => s.entries.forEach((e) => allEntries.push({ taskTitle: s.task.title, ...e })));
     allEntries.sort((a, b) => a.startTime - b.startTime);
-
-    allEntries.forEach((entry) => {
-      detailsData.push([
-        entry.taskTitle,
-        formatTime(entry.startTime),
-        formatTime(entry.endTime),
-        formatDuration(entry.duration),
-      ]);
-    });
+    allEntries.forEach((e) => detailsData.push([e.taskTitle, e.cycleIndex || "", formatTime(e.startTime), formatTime(e.endTime), formatDuration(e.duration)]));
 
     const wsInfo = XLSX.utils.aoa_to_sheet(infoData);
     const wsStats = XLSX.utils.aoa_to_sheet(statsData);
     const wsDetails = XLSX.utils.aoa_to_sheet(detailsData);
-    const detailsExtended = [
-      ["Détails chronologiques des activités (extended)"],
-      ["Tâche", "Début", "Fin", "Durée (texte)", "Durée (ms)", "Durée (jours)"],
-    ];
-    allEntries.forEach((entry) => {
-      detailsExtended.push([
-        entry.taskTitle,
-        formatTime(entry.startTime),
-        formatTime(entry.endTime),
-        formatDuration(entry.duration),
-        entry.duration || 0,
-        (entry.duration || 0) / 86400000,
-      ]);
-    });
+
+    // Chronologie étendue
+    const detailsExtended = [["Détails chronologiques des activités (extended)"], ["Tâche", "Cycle #", "Début", "Fin", "Durée (texte)", "Durée (ms)", "Durée (jours)"]];
+    allEntries.forEach((e) => detailsExtended.push([e.taskTitle, e.cycleIndex || "", formatTime(e.startTime), formatTime(e.endTime), formatDuration(e.duration), e.duration || 0, (e.duration || 0) / 86400000]));
     const wsDetailsExtended = XLSX.utils.aoa_to_sheet(detailsExtended);
-    const rawData = [
-      ["Raw"],
-      ["Tâche", "Début", "Fin", "Durée (ms)", "Durée (jours)", "VA/NVA"],
-    ];
-    allEntries.forEach((entry) => {
-      const taskObj = this.taskSummaries[entry.taskId]
-        ? this.taskSummaries[entry.taskId].task
-        : null;
-      const classif =
-        taskObj && taskObj.hasOwnProperty("va")
-          ? taskObj.va
-            ? "VA"
-            : "NVA"
-          : "";
-      const startSerial = entry.startTime
-        ? entry.startTime / 86400000 + 25569
-        : "";
-      const endSerial = entry.endTime ? entry.endTime / 86400000 + 25569 : "";
-      rawData.push([
-        entry.taskTitle,
-        startSerial,
-        endSerial,
-        entry.duration || 0,
-        (entry.duration || 0) / 86400000,
-        classif,
-      ]);
+
+    // Cycles (globaux)
+    const cyclesData = [["Cycles (globaux)"], ["Cycle #", "Horodatage", "Durée (texte)", "Durée (ms)", "Durée (jours)"]];
+    (this.cycleHistory || []).forEach((c) => {
+      const serial = c.timestamp ? c.timestamp / 86400000 + 25569 : "";
+      cyclesData.push([c.index || "", serial, formatDuration(c.duration), c.duration || 0, (c.duration || 0) / 86400000]);
+    });
+    const wsCycles = XLSX.utils.aoa_to_sheet(cyclesData);
+
+    // Raw & VA/NVA & Gauss (inchangés sauf dépendances)
+    const rawData = [["Raw"], ["Tâche", "Cycle #", "Début", "Fin", "Durée (ms)", "Durée (jours)", "VA/NVA"]];
+    allEntries.forEach((e) => {
+      const taskObj = this.taskSummaries[e.taskId] ? this.taskSummaries[e.taskId].task : null;
+      const classif = taskObj && taskObj.hasOwnProperty("va") ? (taskObj.va ? "VA" : "NVA") : "";
+      const startSerial = e.startTime ? e.startTime / 86400000 + 25569 : "";
+      const endSerial = e.endTime ? e.endTime / 86400000 + 25569 : "";
+      rawData.push([e.taskTitle, e.cycleIndex || "", startSerial, endSerial, e.duration || 0, (e.duration || 0) / 86400000, classif]);
     });
     const wsRaw = XLSX.utils.aoa_to_sheet(rawData);
+
     const { vaTime, nvaTime, unclassifiedTime } = this.getVaNvaTotals();
     const totalForClassif = totalSessionTime || 1;
-    const vaNvaData = [
-      ["Répartition VA / NVA"],
-      ["Catégorie", "Temps total", "Pourcentage"],
-      [
-        "VA",
-        formatDuration(vaTime),
-        `${((vaTime / totalForClassif) * 100).toFixed(2)}%`,
-      ],
-      [
-        "NVA",
-        formatDuration(nvaTime),
-        `${((nvaTime / totalForClassif) * 100).toFixed(2)}%`,
-      ],
-      [
-        "Non classé",
-        formatDuration(unclassifiedTime),
-        `${((unclassifiedTime / totalForClassif) * 100).toFixed(2)}%`,
-      ],
-    ];
+    const vaNvaData = [["Répartition VA / NVA"], ["Catégorie", "Temps total", "Pourcentage"], ["VA", formatDuration(vaTime), `${((vaTime / totalForClassif) * 100).toFixed(2)}%`], ["NVA", formatDuration(nvaTime), `${((nvaTime / totalForClassif) * 100).toFixed(2)}%`], ["Non classé", formatDuration(unclassifiedTime), `${((unclassifiedTime / totalForClassif) * 100).toFixed(2)}%`]];
     const wsVaNva = XLSX.utils.aoa_to_sheet(vaNvaData);
-    const gaussSheetData = [
-      ["Courbes de Gauss (points normalisés)"],
-      ["Tâche", "x (ms)", "y (normalisé)"],
-    ];
+
+    const gaussSheetData = [["Courbes de Gauss (points normalisés)"], ["Tâche", "x (ms)", "y (normalisé)"]];
     let gaussAny = false;
-    Object.values(this.taskSummaries).forEach((summary) => {
-      const durations = summary.entries.map((e) => e.duration);
+    Object.values(this.taskSummaries).forEach((s) => {
+      const durations = s.entries.map((e) => e.duration);
       if (durations.length >= 2) {
         const points = this.calculateGaussianData(durations);
         gaussSheetData.push([]);
-        gaussSheetData.push([`Tâche : ${summary.task.title}`]);
+        gaussSheetData.push([`Tâche : ${s.task.title}`]);
         gaussSheetData.push(["Tâche", "x (ms)", "y (normalisé)"]);
-        points.forEach((p) => {
-          gaussSheetData.push([
-            summary.task.title,
-            Math.round(p.x),
-            Number(p.y.toFixed(6)),
-          ]);
-        });
+        points.forEach((p) => gaussSheetData.push([s.task.title, Math.round(p.x), Number(p.y.toFixed(6))]));
         gaussAny = true;
       }
     });
     if (!gaussAny) {
       gaussSheetData.push([]);
-      gaussSheetData.push([
-        "Pas assez de données pour générer des courbes de Gauss (au moins 2 mesures par activité).",
-      ]);
+      gaussSheetData.push(["Pas assez de données pour générer des courbes de Gauss (au moins 2 mesures par activité)."]);
     }
     const wsGauss = XLSX.utils.aoa_to_sheet(gaussSheetData);
 
+    // Append
     XLSX.utils.book_append_sheet(wb, wsInfo, "Résumé");
     XLSX.utils.book_append_sheet(wb, wsStats, "Statistiques");
     XLSX.utils.book_append_sheet(wb, wsDetails, "Chronologie");
@@ -693,6 +634,7 @@ class SummaryPage {
     XLSX.utils.book_append_sheet(wb, wsRaw, "Raw");
     XLSX.utils.book_append_sheet(wb, wsVaNva, "VA_NVA");
     XLSX.utils.book_append_sheet(wb, wsGauss, "Gauss");
+    XLSX.utils.book_append_sheet(wb, wsCycles, "Cycles");
 
     const date = new Date().toISOString().split("T")[0];
     const filename = `suivi_operateur_${this.observationInfo.examineeName}_${date}.xlsx`;
@@ -865,7 +807,7 @@ class SummaryPage {
     const wsDetails = workbook.addWorksheet("Chronologie");
     const detailsRows = [
       ["Détails chronologiques des activités"],
-      ["Tâche", "Début", "Fin", "Durée"],
+      ["Tâche", "Cycle #", "Début", "Fin", "Durée"],
     ];
     const allEntries = [];
     Object.values(this.taskSummaries).forEach((s) =>
@@ -877,6 +819,7 @@ class SummaryPage {
     allEntries.forEach((e) =>
       detailsRows.push([
         e.taskTitle,
+        e.cycleIndex || "",
         formatTime(e.startTime),
         formatTime(e.endTime),
         formatDuration(e.duration),
@@ -886,6 +829,7 @@ class SummaryPage {
     const wsRaw = workbook.addWorksheet("Raw");
     const rawHeader = [
       "Tâche",
+      "Cycle #",
       "Début",
       "Fin",
       "Durée (ms)",
@@ -907,19 +851,37 @@ class SummaryPage {
       const endDate = e.endTime ? new Date(e.endTime) : null;
       const durMs = e.duration || 0;
       const durDays = durMs / 86400000;
-      wsRaw.addRow([e.taskTitle, startDate, endDate, durMs, durDays, classif]);
+      wsRaw.addRow([e.taskTitle, e.cycleIndex || "", startDate, endDate, durMs, durDays, classif]);
     });
     wsRaw.getColumn(2).numFmt = "dd/mm/yyyy hh:mm:ss";
     wsRaw.getColumn(3).numFmt = "dd/mm/yyyy hh:mm:ss";
     wsRaw.getColumn(5).numFmt = "[h]:mm:ss.00";
+    const wsCycles = workbook.addWorksheet("Cycles");
+    const cyclesHeader = ["Cycle #", "Horodatage", "Durée (texte)", "Durée (ms)", "Durée (jours)"];
+    wsCycles.addRow(cyclesHeader);
+    (this.cycleHistory || []).forEach((c) => {
+      const durMs = c.duration || 0;
+      const durDays = durMs / 86400000;
+      const ts = c.timestamp ? new Date(c.timestamp) : null;
+      wsCycles.addRow([
+        c.index || "",
+        ts,
+        formatDuration(durMs),
+        durMs,
+        durDays,
+      ]);
+    });
+    wsCycles.getColumn(2).numFmt = "dd/mm/yyyy hh:mm:ss";
+    wsCycles.getColumn(5).numFmt = "[h]:mm:ss.00";
     const wsDetailsExtended = workbook.addWorksheet("Chronologie_Extended");
     const detailsExtendedRows = [
       ["Détails chronologiques des activités (extended)"],
-      ["Tâche", "Début", "Fin", "Durée (texte)", "Durée (ms)", "Durée (jours)"],
+      ["Tâche", "Cycle #", "Début", "Fin", "Durée (texte)", "Durée (ms)", "Durée (jours)"],
     ];
     allEntries.forEach((e) =>
       detailsExtendedRows.push([
         e.taskTitle,
+        e.cycleIndex || "",
         formatTime(e.startTime),
         formatTime(e.endTime),
         formatDuration(e.duration),
@@ -1192,6 +1154,28 @@ class SummaryPage {
           r++;
         })
       );
+      // Add global cycles sheet as an extra (not tied to template ranges)
+      const cyclesSheet = workbook.addSheet("Cycles");
+      const header = [
+        "Cycle #",
+        "Horodatage",
+        "Durée (texte)",
+        "Durée (ms)",
+        "Durée (jours)",
+      ];
+      header.forEach((h, i) => cyclesSheet.cell(1, i + 1).value(h));
+      let rc = 2;
+      (this.cycleHistory || []).forEach((c) => {
+        const ts = c.timestamp ? new Date(c.timestamp) : null;
+        const durMs = c.duration || 0;
+        const durDays = durMs / 86400000;
+        cyclesSheet.cell(rc, 1).value(c.index || "");
+        if (ts) cyclesSheet.cell(rc, 2).value(ts);
+        cyclesSheet.cell(rc, 3).value(formatDuration(durMs));
+        cyclesSheet.cell(rc, 4).value(durMs);
+        cyclesSheet.cell(rc, 5).value(durDays);
+        rc++;
+      });
     } catch (e) {}
 
     const out = await workbook.outputAsync();

@@ -26,6 +26,7 @@ class ButtonsPage {
     this.descriptionModal = new Modal("descriptionModal");
     this.addTaskModal = new Modal("addTaskModal");
     this.pauseBtn = document.getElementById("pauseBtn");
+    this.cycleBtn = document.getElementById("cycleBtn");
   }
 
   setupPage() {
@@ -34,6 +35,7 @@ class ButtonsPage {
     this.setupEndSessionButton();
     this.setupAddTaskButton();
     this.setupPauseButton();
+    this.setupCycleButton();
   }
 
   setupPauseButton() {
@@ -41,6 +43,20 @@ class ButtonsPage {
     this.pauseBtn.addEventListener("click", (e) => {
       e.preventDefault();
       chronometer.pause();
+      return false;
+    });
+  }
+
+  setupCycleButton() {
+    if (!this.cycleBtn) return;
+    this.cycleBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      chronometer.topCycle();
+      // Petit feedback visuel léger
+      this.cycleBtn.animate(
+        [{ transform: "scale(1)" }, { transform: "scale(1.05)" }, { transform: "scale(1)" }],
+        { duration: 180, easing: "ease-out" }
+      );
       return false;
     });
   }
