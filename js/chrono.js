@@ -16,6 +16,7 @@ class Chronometer {
     this.currentCycleIndex = 1;
     this.cycleWallStart = null;
     this.cyclePerfStart = null;
+    this.currentRemark = "";
   }
 
   cacheDisplayElements() {
@@ -49,6 +50,7 @@ class Chronometer {
         this.updateCycleDisplay();
         this.updateCycleElapsedElement();
         this.updateButtonStyles();
+        this.notifyRemarkControlsUpdate();
         return;
       }
 
@@ -89,6 +91,7 @@ class Chronometer {
     this.currentCycleElapsed = 0;
     this.updateCycleElapsedElement();
     this.updateButtonStyles();
+    this.notifyRemarkControlsUpdate();
   }
 
   stop() {
@@ -111,6 +114,7 @@ class Chronometer {
       this.updateCycleElapsedElement();
       this.updateCycleDisplay();
       this.updateButtonStyles();
+      this.notifyRemarkControlsUpdate();
     }
   }
 
@@ -129,6 +133,7 @@ class Chronometer {
       // conserve currentCycleElapsed tel quel pour affichage figé
       this.updateCycleElapsedElement();
       this.updateButtonStyles();
+      this.notifyRemarkControlsUpdate();
       return;
     }
 
@@ -254,9 +259,22 @@ class Chronometer {
       endTime: now,
       duration: this.elapsedTime,
         cycleIndex: cycleIndex || this.currentCycleIndex || 1,
+      remark: this.currentRemark || "",
     });
 
     Storage.set("timeHistory", history);
+    // Nettoie la remarque courante après enregistrement de la mesure
+    this.currentRemark = "";
+  }
+
+  setRemark(text) {
+    try {
+      const t = String(text || "").trim();
+      // Limite de sécurité pour éviter des champs trop longs
+      this.currentRemark = t.length > 500 ? t.slice(0, 500) : t;
+    } catch (_) {
+      this.currentRemark = "";
+    }
   }
 
   // Enregistre une mesure de temps alignée sur le cycle courant
@@ -294,6 +312,14 @@ class Chronometer {
   clearCache() {
     this.cachedButtons.clear();
     this.displayElements = [];
+  }
+
+  notifyRemarkControlsUpdate() {
+    try {
+      if (window.buttonsPage && typeof window.buttonsPage.updateRemarkControlsState === 'function') {
+        window.buttonsPage.updateRemarkControlsState();
+      }
+    } catch (_) {}
   }
 }
 // Instance unique du chronomètre

@@ -552,19 +552,19 @@ class SummaryPage {
     });
 
     // Chronologie
-    const detailsData = [["Détails chronologiques des activités"], ["Tâche", "Cycle #", "Début", "Fin", "Durée"]];
+    const detailsData = [["Détails chronologiques des activités"], ["Tâche", "Cycle #", "Début", "Fin", "Durée", "Remarque"]];
     const allEntries = [];
     Object.values(this.taskSummaries).forEach((s) => s.entries.forEach((e) => allEntries.push({ taskTitle: s.task.title, ...e })));
     allEntries.sort((a, b) => a.startTime - b.startTime);
-    allEntries.forEach((e) => detailsData.push([e.taskTitle, e.cycleIndex || "", formatTime(e.startTime), formatTime(e.endTime), formatDuration(e.duration)]));
+    allEntries.forEach((e) => detailsData.push([e.taskTitle, e.cycleIndex || "", formatTime(e.startTime), formatTime(e.endTime), formatDuration(e.duration), e.remark || ""]));
 
     const wsInfo = XLSX.utils.aoa_to_sheet(infoData);
     const wsStats = XLSX.utils.aoa_to_sheet(statsData);
     const wsDetails = XLSX.utils.aoa_to_sheet(detailsData);
 
     // Chronologie étendue
-    const detailsExtended = [["Détails chronologiques des activités (extended)"], ["Tâche", "Cycle #", "Début", "Fin", "Durée (texte)", "Durée (ms)", "Durée (jours)"]];
-    allEntries.forEach((e) => detailsExtended.push([e.taskTitle, e.cycleIndex || "", formatTime(e.startTime), formatTime(e.endTime), formatDuration(e.duration), e.duration || 0, (e.duration || 0) / 86400000]));
+    const detailsExtended = [["Détails chronologiques des activités (extended)"], ["Tâche", "Cycle #", "Début", "Fin", "Durée (texte)", "Durée (ms)", "Durée (jours)", "Remarque"]];
+    allEntries.forEach((e) => detailsExtended.push([e.taskTitle, e.cycleIndex || "", formatTime(e.startTime), formatTime(e.endTime), formatDuration(e.duration), e.duration || 0, (e.duration || 0) / 86400000, e.remark || ""]));
     const wsDetailsExtended = XLSX.utils.aoa_to_sheet(detailsExtended);
 
     // Cycles (globaux)
@@ -576,13 +576,13 @@ class SummaryPage {
     const wsCycles = XLSX.utils.aoa_to_sheet(cyclesData);
 
     // Raw & VA/NVA & Gauss (inchangés sauf dépendances)
-    const rawData = [["Raw"], ["Tâche", "Cycle #", "Début", "Fin", "Durée (ms)", "Durée (jours)", "VA/NVA"]];
+    const rawData = [["Raw"], ["Tâche", "Cycle #", "Début", "Fin", "Durée (ms)", "Durée (jours)", "VA/NVA", "Remarque"]];
     allEntries.forEach((e) => {
       const taskObj = this.taskSummaries[e.taskId] ? this.taskSummaries[e.taskId].task : null;
       const classif = taskObj && taskObj.hasOwnProperty("va") ? (taskObj.va ? "VA" : "NVA") : "";
       const startSerial = e.startTime ? e.startTime / 86400000 + 25569 : "";
       const endSerial = e.endTime ? e.endTime / 86400000 + 25569 : "";
-      rawData.push([e.taskTitle, e.cycleIndex || "", startSerial, endSerial, e.duration || 0, (e.duration || 0) / 86400000, classif]);
+      rawData.push([e.taskTitle, e.cycleIndex || "", startSerial, endSerial, e.duration || 0, (e.duration || 0) / 86400000, classif, e.remark || ""]);
     });
     const wsRaw = XLSX.utils.aoa_to_sheet(rawData);
 
@@ -645,7 +645,7 @@ class SummaryPage {
         secondsTime,
         cmin,
         e.taskTitle,
-        "",
+        e.remark || "",
       ]);
     });
     const wsSequences = XLSX.utils.aoa_to_sheet(sequencesData);
@@ -845,7 +845,7 @@ class SummaryPage {
     const wsDetails = workbook.addWorksheet("Chronologie");
     const detailsRows = [
       ["Détails chronologiques des activités"],
-      ["Tâche", "Cycle #", "Début", "Fin", "Durée"],
+      ["Tâche", "Cycle #", "Début", "Fin", "Durée", "Remarque"],
     ];
     const allEntries = [];
     Object.values(this.taskSummaries).forEach((s) =>
@@ -861,6 +861,7 @@ class SummaryPage {
         formatTime(e.startTime),
         formatTime(e.endTime),
         formatDuration(e.duration),
+        e.remark || "",
       ])
     );
     wsDetails.addRows(detailsRows);
@@ -873,6 +874,7 @@ class SummaryPage {
       "Durée (ms)",
       "Durée (jours)",
       "VA/NVA",
+      "Remarque",
     ];
     wsRaw.addRow(rawHeader);
     allEntries.forEach((e) => {
@@ -889,7 +891,7 @@ class SummaryPage {
       const endDate = e.endTime ? new Date(e.endTime) : null;
       const durMs = e.duration || 0;
       const durDays = durMs / 86400000;
-      wsRaw.addRow([e.taskTitle, e.cycleIndex || "", startDate, endDate, durMs, durDays, classif]);
+      wsRaw.addRow([e.taskTitle, e.cycleIndex || "", startDate, endDate, durMs, durDays, classif, e.remark || ""]);
     });
     wsRaw.getColumn(2).numFmt = "dd/mm/yyyy hh:mm:ss";
     wsRaw.getColumn(3).numFmt = "dd/mm/yyyy hh:mm:ss";
@@ -914,7 +916,7 @@ class SummaryPage {
     const wsDetailsExtended = workbook.addWorksheet("Chronologie_Extended");
     const detailsExtendedRows = [
       ["Détails chronologiques des activités (extended)"],
-      ["Tâche", "Cycle #", "Début", "Fin", "Durée (texte)", "Durée (ms)", "Durée (jours)"],
+      ["Tâche", "Cycle #", "Début", "Fin", "Durée (texte)", "Durée (ms)", "Durée (jours)", "Remarque"],
     ];
     allEntries.forEach((e) =>
       detailsExtendedRows.push([
@@ -925,6 +927,7 @@ class SummaryPage {
         formatDuration(e.duration),
         e.duration || 0,
         (e.duration || 0) / 86400000,
+        e.remark || "",
       ])
     );
     wsDetailsExtended.addRows(detailsExtendedRows);
@@ -1012,7 +1015,7 @@ class SummaryPage {
         secondsTime,
         cmin,
         e.taskTitle,
-        "",
+        e.remark || "",
       ]);
     });
     wsSeq.getColumn(3).numFmt = "hh:mm:ss.00";
@@ -1203,6 +1206,7 @@ class SummaryPage {
         "Durée (ms)",
         "Durée (jours)",
         "VA/NVA",
+        "Remarque",
       ];
       rawHeader.forEach((h, i) => rawSheet.cell(1, i + 1).value(h));
       let r = 2;
@@ -1224,6 +1228,7 @@ class SummaryPage {
           rawSheet.cell(r, 4).value(durMs);
           rawSheet.cell(r, 5).value(durDays);
           rawSheet.cell(r, 6).value(classif);
+          rawSheet.cell(r, 7).value(e.remark || "");
           r++;
         })
       );
@@ -1287,7 +1292,7 @@ class SummaryPage {
         seqSheet.cell(rs, 4).style("numberFormat", "mm:ss.00");
         seqSheet.cell(rs, 5).value(cmin).style("numberFormat", "0.0");
         seqSheet.cell(rs, 6).value(e.taskTitle);
-        seqSheet.cell(rs, 7).value("");
+        seqSheet.cell(rs, 7).value(e.remark || "");
         rs++;
       });
     } catch (e) {}

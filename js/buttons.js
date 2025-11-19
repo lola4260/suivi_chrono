@@ -27,6 +27,8 @@ class ButtonsPage {
     this.addTaskModal = new Modal("addTaskModal");
     this.pauseBtn = document.getElementById("pauseBtn");
     this.cycleBtn = document.getElementById("cycleBtn");
+    this.remarkInput = document.getElementById("remarkInput");
+    this.remarkSaveBtn = document.getElementById("remarkSaveBtn");
   }
 
   setupPage() {
@@ -36,6 +38,7 @@ class ButtonsPage {
     this.setupAddTaskButton();
     this.setupPauseButton();
     this.setupCycleButton();
+    this.setupRemarkControls();
   }
 
   setupPauseButton() {
@@ -59,6 +62,49 @@ class ButtonsPage {
       );
       return false;
     });
+  }
+
+  setupRemarkControls() {
+    if (!this.remarkInput || !this.remarkSaveBtn) return;
+    const save = () => {
+      const val = this.remarkInput.value || "";
+      chronometer.setRemark(val);
+      // feedback léger
+      this.remarkSaveBtn.animate(
+        [{ transform: "scale(1)" }, { transform: "scale(1.08)" }, { transform: "scale(1)" }],
+        { duration: 160, easing: "ease-out" }
+      );
+      // Vide le champ après prise en compte de la remarque
+      this.remarkInput.value = "";
+    };
+    this.remarkSaveBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      save();
+      return false;
+    });
+    this.remarkInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        save();
+        return false;
+      }
+    });
+    // Option: mise à jour à la volée
+    this.remarkInput.addEventListener("change", () => {
+      chronometer.setRemark(this.remarkInput.value || "");
+    });
+    // Initialise l'état désactivé au démarrage
+    this.updateRemarkControlsState();
+  }
+
+  updateRemarkControlsState() {
+    if (!this.remarkInput || !this.remarkSaveBtn) return;
+    const isActive = chronometer.isRunning && !chronometer.isPaused;
+    this.remarkInput.disabled = !isActive;
+    this.remarkSaveBtn.disabled = !isActive;
+    if (!isActive) {
+      this.remarkInput.value = "";
+    }
   }
 
   displayObservationInfo() {
@@ -199,5 +245,5 @@ class ButtonsPage {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  new ButtonsPage();
+  window.buttonsPage = new ButtonsPage();
 });
