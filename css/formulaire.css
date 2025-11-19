@@ -94,6 +94,57 @@
 }
 
 /**
+ * @section presets Profils prédéfinis
+ */
+.presets-section {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    margin: 20px 0;
+}
+
+.presets-section h3 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    color: #333;
+    font-size: 1.2rem;
+}
+
+.presets-hint {
+    margin-bottom: 15px;
+    color: #666;
+    font-size: 0.95rem;
+}
+
+.presets-buttons {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+}
+
+.preset-btn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 14px 20px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.preset-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.preset-btn:active {
+    transform: translateY(0);
+}
+
+/**
  * @section responsive Adaptation mobile
  */
 @media (max-width: 768px) {

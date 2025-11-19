@@ -13,6 +13,52 @@
 class TaskForm {
   constructor() {
     this.tasks = [];
+    this.taskPresets = {
+      cariste: [
+        { title: "Trans Emb Plein", description: "" },
+        { title: "Trans Emb Vide", description: "" },
+        { title: "Véh Vide - suite Véh plein", description: "" },
+        { title: "act Man", description: "" },
+        { title: "gerb. dégerb", description: "" },
+        { title: "Véh Vide - Recherche", description: "" },
+        { title: "Depol-Hygien.", description: "" },
+        { title: "Taches Admin", description: "" },
+        { title: "Chgt Engin", description: "" },
+        { title: "Attente", description: "" },
+        { title: "Aléas", description: "" },
+        { title: "Retour Zone", description: "" },
+      ],
+      assemblage: [
+        { title: "Prise - Dépose", description: "" },
+        { title: "Fixer", description: "" },
+        { title: "Positionner - Ajuster", description: "" },
+        { title: "Prise/Dep inter", description: "" },
+        { title: "Marcher", description: "" },
+        { title: "Lire - Ecrire", description: "" },
+        { title: "Retoucher", description: "" },
+        { title: "Contrôler", description: "" },
+        { title: "Attendre", description: "" },
+        { title: "Aléas", description: "" },
+      ],
+      picking: [
+        { title: "Pickage", description: "" },
+        { title: "Manut Chariot", description: "" },
+        { title: "Depol-Hygien.", description: "" },
+        { title: "Taches Admin", description: "" },
+        { title: "Prépa pièces", description: "" },
+        { title: "Attendre", description: "" },
+        { title: "Aléas", description: "" },
+      ],
+      chafab: [
+        { title: "prepa Tmasqu", description: "" },
+        { title: "dplct", description: "" },
+        { title: "Temps actif", description: "" },
+        { title: "Taches Admin", description: "" },
+        { title: "Prépa pièces", description: "" },
+        { title: "Attendre", description: "" },
+        { title: "Aléas", description: "" },
+      ],
+    };
     this.initializeElements();
     this.setupEventListeners();
     this.loadFromStorage();
@@ -87,6 +133,14 @@ class TaskForm {
         this.updateSuggestedColor()
       );
     }
+
+    // Wire preset buttons
+    document.querySelectorAll(".preset-btn").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const preset = btn.dataset.preset;
+        this.loadPreset(preset);
+      });
+    });
   }
 
   showStatus(message, timeout = 2000) {
@@ -195,10 +249,51 @@ class TaskForm {
     });
   }
 
+  loadPreset(presetName) {
+    const preset = this.taskPresets[presetName];
+    if (!preset) return;
+
+    // Confirm if tasks already exist
+    if (this.tasks.length > 0) {
+      const confirm = window.confirm(
+        "Voulez-vous remplacer les tâches existantes par ce profil prédéfini ?"
+      );
+      if (!confirm) return;
+      this.tasks = [];
+    }
+
+    // Add all preset tasks
+    preset.forEach((taskData, index) => {
+      const color = this.defaultColors[index % this.defaultColors.length];
+      const task = {
+        id: Date.now() + index,
+        title: taskData.title,
+        description: taskData.description,
+        color: color,
+      };
+      this.tasks.push(task);
+    });
+
+    this.renderTasks();
+    this.saveToStorage();
+    this.showStatus(`Profil "${presetName}" chargé avec ${preset.length} tâches`, 3000);
+  }
+
   restoreObservationInfo(info) {
     this.fields.examineeName.value = info.examineeName;
     this.fields.examinerName.value = info.examinerName;
     this.fields.examDate.value = info.examDate;
+  }
+
+  renderTasks() {
+    if (!this.tasksContainer) return;
+    this.tasksContainer.innerHTML = "";
+    const fragment = document.createDocumentFragment();
+    this.tasks.forEach((task) => {
+      const taskElement = this.createTaskElement(task);
+      fragment.appendChild(taskElement);
+    });
+    this.tasksContainer.appendChild(fragment);
   }
 
   createTaskElement(task) {
