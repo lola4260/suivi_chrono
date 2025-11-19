@@ -25,8 +25,10 @@ class ButtonsPage {
     this.observationInfoDiv = document.getElementById("observation-info");
     this.descriptionModal = new Modal("descriptionModal");
     this.addTaskModal = new Modal("addTaskModal");
+    this.changeTaskModal = new Modal("changeTaskModal");
     this.pauseBtn = document.getElementById("pauseBtn");
     this.cycleBtn = document.getElementById("cycleBtn");
+    this.changeTaskBtn = document.getElementById("changeTaskBtn");
     this.remarkInput = document.getElementById("remarkInput");
     this.remarkSaveBtn = document.getElementById("remarkSaveBtn");
   }
@@ -38,6 +40,7 @@ class ButtonsPage {
     this.setupAddTaskButton();
     this.setupPauseButton();
     this.setupCycleButton();
+    this.setupChangeTaskButton();
     this.setupRemarkControls();
   }
 
@@ -105,6 +108,38 @@ class ButtonsPage {
     if (!isActive) {
       this.remarkInput.value = "";
     }
+  }
+
+  setupChangeTaskButton() {
+    if (!this.changeTaskBtn) return;
+    this.changeTaskBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      if (!chronometer.isRunning) return;
+      this.showChangeTaskModal();
+      return false;
+    });
+  }
+
+  showChangeTaskModal() {
+    const listDiv = document.getElementById("changeTaskList");
+    if (!listDiv) return;
+    listDiv.innerHTML = "";
+    
+    this.tasks.forEach((task) => {
+      if (String(task.id) === chronometer.currentTaskId) return; // Skip current task
+      
+      const btn = document.createElement("button");
+      btn.className = "change-task-option";
+      btn.style.backgroundColor = task.color;
+      btn.textContent = task.title;
+      btn.onclick = () => {
+        chronometer.changeTask(task.id);
+        this.changeTaskModal.hide();
+      };
+      listDiv.appendChild(btn);
+    });
+    
+    this.changeTaskModal.show();
   }
 
   displayObservationInfo() {

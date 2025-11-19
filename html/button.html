@@ -21,6 +21,7 @@
             <div class="chrono-controls">
                 <button id="pauseBtn" class="pause-button">Pause</button>
                 <button id="cycleBtn" class="topcycle-button" title="Marquer la fin d'un cycle">Top cycle</button>
+                <button id="changeTaskBtn" class="change-task-button" title="Changer la tâche en cours">Changer de tâche</button>
                 <span class="cycle-badge" title="Durée du cycle en cours">Cycle: <span id="cycleElapsed">00:00.00</span></span>
             </div>
             <div class="remark-controls">
@@ -68,6 +69,16 @@
                     <button type="button" class="cancel-btn">Annuler</button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <div id="changeTaskModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>Changer de tâche</h2>
+            <p>Sélectionnez la tâche correcte :</p>
+            <div id="changeTaskList" class="change-task-list">
+            </div>
         </div>
     </div>
 

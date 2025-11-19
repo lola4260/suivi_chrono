@@ -321,6 +321,13 @@ class Chronometer {
       }
     } catch (_) {}
   }
+
+  changeTask(newTaskId) {
+    if (!this.isRunning || !newTaskId) return;
+    // Normalise l'identifiant de tâche en chaîne
+    this.currentTaskId = String(newTaskId);
+    this.updateButtonStyles();
+  }
 }
 // Instance unique du chronomètre
 const chronometer = new Chronometer();
