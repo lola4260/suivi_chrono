@@ -358,17 +358,6 @@ class SummaryPage {
                 </div>
                 <div class="task-summary-body">
                     <p>${summary.task.description || "Aucune description"}</p>
-                  <p><strong>Cycles</strong> : ${summary.cycles.length} ${summary.cycles.length > 0 ? `(moyenne: ${formatDuration(Math.round(summary.totalCycleTime / summary.cycles.length))})` : ""}</p>
-                  ${summary.cycles.length > 0 ? `
-                  <div class="cycle-entries">
-                    ${summary.cycles.map((c, i) => `
-                      <div class="cycle-entry">
-                        <span>Cycle #${i + 1} — ${formatTime(c.timestamp)}</span>
-                        <span>${formatDuration(c.duration)}</span>
-                      </div>
-                    `).join("")}
-                  </div>
-                  ` : ""}
                     <div class="time-entries">
                         ${summary.entries
                           .map(
