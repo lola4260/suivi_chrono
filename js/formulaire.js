@@ -71,6 +71,7 @@ class TaskForm {
     this.colorHex = document.getElementById("colorHex");
     this.validationSection = document.getElementById("validationSection");
     this.validateButton = document.getElementById("validateButton");
+    this.resetTasksBtn = document.getElementById("resetTasksBtn");
     this.taskForm = document.getElementById("taskForm");
     this.tasksContainer = document.querySelector(".tasks-container");
     this.fields = {
@@ -141,6 +142,14 @@ class TaskForm {
         this.loadPreset(preset);
       });
     });
+
+    // Wire reset button
+    if (this.resetTasksBtn) {
+      this.resetTasksBtn.addEventListener("click", () => {
+        console.log("Reset button clicked");
+        this.resetAllTasks();
+      });
+    }
   }
 
   showStatus(message, timeout = 2000) {
@@ -294,6 +303,31 @@ class TaskForm {
       fragment.appendChild(taskElement);
     });
     this.tasksContainer.appendChild(fragment);
+  }
+
+  resetAllTasks() {
+    console.log("resetAllTasks called, tasks count:", this.tasks.length);
+    
+    if (this.tasks.length === 0) {
+      alert("Aucune tâche à supprimer");
+      return;
+    }
+
+    const confirmResult = confirm(
+      `Voulez-vous vraiment supprimer toutes les ${this.tasks.length} tâches ?`
+    );
+    
+    if (!confirmResult) return;
+
+    this.tasks = [];
+    this.renderTasks();
+    this.saveToStorage();
+    
+    if (typeof this.updateSuggestedColor === "function") {
+      this.updateSuggestedColor();
+    }
+    
+    alert("Toutes les tâches ont été supprimées");
   }
 
   createTaskElement(task) {
