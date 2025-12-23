@@ -5,91 +5,104 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Suivi des Collaborateurs</title>
+    <meta name="i18n-title" content="app.title">
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="../css/formulaire.css">
+    <link rel="stylesheet" href="../css/language.css">
     <link rel="manifest" href="../manifest.json">
     <meta name="theme-color" content="#4CAF50">
 </head>
 
 <body>
+    <div id="languageSelectorContainer"></div>
     <div class="form-container">
-        <h1>Configuration du suivi du collaborateur</h1>
+        <h1 data-i18n="form.title">Configuration du suivi du collaborateur</h1>
         <form id="taskForm">
             <div class="exam-info">
-                <h2>Informations de l'observation</h2>
+                <h2 data-i18n="form.observationInfo">Informations de l'observation</h2>
                 <div class="info-grid">
                     <div class="form-group">
-                        <label for="examineeName">Collaborateur observé :</label>
+                        <label for="examineeName" data-i18n="form.examineeName">Collaborateur observé :</label>
                         <input type="text" id="examineeName" name="examineeName" required
-                            placeholder="Nom du collaborateur">
+                            placeholder="Nom du collaborateur" data-i18n="form.examineeNamePlaceholder">
                     </div>
 
                     <div class="form-group">
-                        <label for="examinerName">Observateur :</label>
+                        <label for="examinerName" data-i18n="form.examinerName">Observateur :</label>
                         <input type="text" id="examinerName" name="examinerName" required
-                            placeholder="Nom de l'observateur">
+                            placeholder="Nom de l'observateur" data-i18n="form.examinerNamePlaceholder">
                     </div>
 
                     <div class="form-group">
-                        <label for="examDate">Date :</label>
+                        <label for="examDate" data-i18n="form.date">Date :</label>
                         <input type="date" id="examDate" name="examDate" required>
                     </div>
                 </div>
             </div>
 
             <div class="section-divider"></div>
-            <h2>Configuration des activités</h2>
+            <h2 data-i18n="form.activitiesConfig">Configuration des activités</h2>
             
             <div class="presets-section">
-                <h3>Profils prédéfinis</h3>
-                <p class="presets-hint">Chargez un ensemble de tâches prédéfinies selon le type d'activité :</p>
+                <h3 data-i18n="form.presets">Profils prédéfinis</h3>
+                <p class="presets-hint" data-i18n="form.presetsHint">Chargez un ensemble de tâches prédéfinies selon le type d'activité :</p>
                 <div class="presets-buttons">
-                    <button type="button" class="preset-btn" data-preset="cariste">Cariste</button>
-                    <button type="button" class="preset-btn" data-preset="assemblage">Assemblage</button>
-                    <button type="button" class="preset-btn" data-preset="picking">Picking/Kitting</button>
-                    <button type="button" class="preset-btn" data-preset="chafab">Chafab</button>
+                    <button type="button" class="preset-btn" data-preset="cariste" data-i18n="form.preset.cariste">Cariste</button>
+                    <button type="button" class="preset-btn" data-preset="assemblage" data-i18n="form.preset.assemblage">Assemblage</button>
+                    <button type="button" class="preset-btn" data-preset="picking" data-i18n="form.preset.picking">Picking/Kitting</button>
+                    <button type="button" class="preset-btn" data-preset="chafab" data-i18n="form.preset.chafab">Chafab</button>
                 </div>
             </div>
 
             <div class="section-divider"></div>
-            <h3>Ajouter une tâche manuellement</h3>
+            <h3 data-i18n="form.addManually">Ajouter une tâche manuellement</h3>
             <div class="form-group">
-                <label for="taskTitle">Nom de l'activité :</label>
+                <label for="taskTitle" data-i18n="form.taskTitle">Nom de l'activité :</label>
                 <input type="text" id="taskTitle" name="taskTitle" required>
             </div>
 
             <div class="form-group">
-                <label for="taskDescription">Description de l'activité :</label>
+                <label for="taskDescription" data-i18n="form.taskDescription">Description de l'activité :</label>
                 <textarea id="taskDescription" name="taskDescription" rows="3"></textarea>
             </div>
 
             <div class="form-group">
-                <label for="buttonColor">Couleur du bouton :</label>
+                <label for="buttonColor" data-i18n="form.buttonColor">Couleur du bouton :</label>
                 <div class="color-picker-container">
                     <input type="color" id="buttonColor" name="buttonColor" value="#4CAF50">
                 </div>
             </div>
 
-            <button type="submit" class="submit-button">Ajouter la tâche</button>
+            <button type="submit" class="submit-button" data-i18n="form.addTask">Ajouter la tâche</button>
         </form>
 
         <div id="taskList">
             <div class="task-list-header">
-                <h2>Liste des tâches configurées</h2>
-                <button id="resetTasksBtn" type="button" class="reset-tasks-button">Réinitialiser</button>
+                <h2 data-i18n="form.taskList">Liste des tâches configurées</h2>
+                <button id="resetTasksBtn" type="button" class="reset-tasks-button" data-i18n="form.reset">Réinitialiser</button>
             </div>
             <div class="tasks-container">
             </div>
         </div>
         <div id="validationSection" class="validation-section">
-            <button id="validateButton" type="button" class="validate-button">Valider et passer au
+            <button id="validateButton" type="button" class="validate-button" data-i18n="form.validate">Valider et passer au
                 chronométrage</button>
         </div>
     </div>
 
+    <script src="../js/i18n.js"></script>
     <script src="../js/main.js"></script>
     <script src="../js/formulaire.js"></script>
     <script>if ('serviceWorker' in navigator) { navigator.serviceWorker.register('../js/service-worker.js'); }</script>
+    <script>
+        // Ajouter le sélecteur de langue
+        document.addEventListener('DOMContentLoaded', function() {
+            const container = document.getElementById('languageSelectorContainer');
+            if (container) {
+                container.appendChild(i18n.createLanguageSelector());
+            }
+        });
+    </script>
 </body>
 
 </html>

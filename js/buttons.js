@@ -146,13 +146,13 @@ class ButtonsPage {
     if (this.observationInfo) {
       const formattedDate = new Date(
         this.observationInfo.examDate
-      ).toLocaleDateString("fr-FR");
+      ).toLocaleDateString(i18n.currentLang === 'fr' ? 'fr-FR' : 'en-US');
       this.observationInfoDiv.innerHTML = `
-                <h2>Session d'observation en cours</h2>
+                <h2>${i18n.t('js.sessionInProgress')}</h2>
                 <div class="info-details">
-                    <p><strong>Collaborateur :</strong> ${this.observationInfo.examineeName}</p>
-                    <p><strong>Observateur :</strong> ${this.observationInfo.examinerName}</p>
-                    <p><strong>Date :</strong> ${formattedDate}</p>
+                    <p><strong>${i18n.t('js.employee')}</strong> ${this.observationInfo.examineeName}</p>
+                    <p><strong>${i18n.t('js.observer')}</strong> ${this.observationInfo.examinerName}</p>
+                    <p><strong>${i18n.t('js.date')}</strong> ${formattedDate}</p>
                 </div>
             `;
     }
@@ -183,14 +183,14 @@ class ButtonsPage {
       });
     } else {
       this.buttonsGrid.innerHTML =
-        '<p class="no-tasks">Aucune tâche n\'a été configurée.</p>';
+        `<p class="no-tasks">${i18n.t('js.noTasksConfigured')}</p>`;
     }
   }
 
   showDescription(title, description) {
     document.getElementById("modalTitle").textContent = title;
     document.getElementById("modalDescription").textContent =
-      description || "Aucune description disponible";
+      description || i18n.t('js.noDescriptionAvailable');
     this.descriptionModal.show();
   }
 

@@ -91,7 +91,7 @@ class SummaryPage {
     this.vaNvaChart = new Chart(ctx, {
       type: "pie",
       data: {
-        labels: ["VA", "NVA", "Non classé"],
+        labels: [i18n.t('excel.va'), i18n.t('excel.nva'), i18n.t('excel.unclassified')],
         datasets: [
           {
             data: [vaTime, nvaTime, unclassifiedTime],
@@ -258,14 +258,14 @@ class SummaryPage {
               },
               title: {
                 display: true,
-                text: "Durée de l'activité",
+                text: i18n.t('excel.activityDuration'),
               },
             },
             y: {
               beginAtZero: true,
               title: {
                 display: true,
-                text: "Fréquence",
+                text: i18n.t('excel.frequency'),
               },
             },
           },
@@ -289,7 +289,7 @@ class SummaryPage {
       const container =
         document.getElementById("gaussChart").parentElement.parentElement;
       container.innerHTML =
-        '<p class="no-data-message">Pas assez de données pour afficher la courbe de Gauss. Il faut au moins 2 mesures par activité.</p>';
+        `<p class="no-data-message">${i18n.t('excel.noGaussData')}</p>`;
       this.gaussChart = null;
     }
   }
@@ -428,7 +428,7 @@ class SummaryPage {
           Storage.set("exported", true);
         } catch (e) {
           alert(
-            "Erreur lors de l'export - regarde la console pour plus de détails."
+            i18n.t('excel.exportError')
           );
         }
       });

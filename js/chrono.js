@@ -238,10 +238,10 @@ class Chronometer {
       if (pauseBtn) {
         if (this.isPaused) {
           pauseBtn.classList.add("paused");
-          pauseBtn.textContent = "Reprendre";
+          pauseBtn.textContent = i18n.t('js.resume');
         } else {
           pauseBtn.classList.remove("paused");
-          pauseBtn.textContent = "Pause";
+          pauseBtn.textContent = i18n.t('js.pause');
         }
       }
     });

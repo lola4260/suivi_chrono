@@ -265,7 +265,7 @@ class TaskForm {
     // Confirm if tasks already exist
     if (this.tasks.length > 0) {
       const confirm = window.confirm(
-        "Voulez-vous remplacer les tâches existantes par ce profil prédéfini ?"
+        i18n.t('js.confirmReplacePreset')
       );
       if (!confirm) return;
       this.tasks = [];
@@ -285,7 +285,7 @@ class TaskForm {
 
     this.renderTasks();
     this.saveToStorage();
-    this.showStatus(`Profil "${presetName}" chargé avec ${preset.length} tâches`, 3000);
+    this.showStatus(i18n.t('js.presetLoaded').replace('{preset}', presetName).replace('{count}', preset.length), 3000);
   }
 
   restoreObservationInfo(info) {
@@ -309,12 +309,12 @@ class TaskForm {
     console.log("resetAllTasks called, tasks count:", this.tasks.length);
     
     if (this.tasks.length === 0) {
-      alert("Aucune tâche à supprimer");
+      alert(i18n.t('js.noTaskToDelete'));
       return;
     }
 
     const confirmResult = confirm(
-      `Voulez-vous vraiment supprimer toutes les ${this.tasks.length} tâches ?`
+      i18n.t('js.confirmDeleteAll').replace('{count}', this.tasks.length)
     );
     
     if (!confirmResult) return;
@@ -327,7 +327,7 @@ class TaskForm {
       this.updateSuggestedColor();
     }
     
-    alert("Toutes les tâches ont été supprimées");
+    alert(i18n.t('js.allTasksDeleted'));
   }
 
   createTaskElement(task) {
@@ -337,7 +337,7 @@ class TaskForm {
 
     const escapedTitle = this.escapeHtml(task.title);
     const escapedDescription = this.escapeHtml(
-      task.description || "Aucune description"
+      task.description || i18n.t('js.noDescription')
     );
 
     taskEl.innerHTML = `

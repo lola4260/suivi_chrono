@@ -5,8 +5,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Résumé de la session</title>
+    <meta name="i18n-title" content="resume.title">
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="../css/resume.css">
+    <link rel="stylesheet" href="../css/language.css">
     <script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
@@ -17,14 +19,15 @@
 </head>
 
 <body>
+    <div id="languageSelectorContainer"></div>
     <div class="summary-container">
         <div class="summary-header">
-            <h1>Résumé de la session d'observation</h1>
+            <h1 data-i18n="resume.sessionTitle">Résumé de la session d'observation</h1>
             <div id="session-info">
             </div>
             <div class="resume-actions">
-                <button id="goToFormButton" class="export-button" title="Commencer une nouvelle configuration">Aller au formulaire</button>
-                <button id="newSessionButton" class="export-button reset-button" title="Effacer et démarrer une nouvelle session">Nouvelle session</button>
+                <button id="goToFormButton" class="export-button" data-i18n-title="resume.goToFormTitle" title="Commencer une nouvelle configuration" data-i18n="resume.goToForm">Aller au formulaire</button>
+                <button id="newSessionButton" class="export-button reset-button" data-i18n-title="resume.newSessionTitle" title="Effacer et démarrer une nouvelle session" data-i18n="resume.newSession">Nouvelle session</button>
             </div>
         </div>
         <div id="tasks-summary">
@@ -32,27 +35,27 @@
 
         <div class="charts-container">
             <div class="chart-section">
-                <h2>Répartition VA / NVA</h2>
+                <h2 data-i18n="resume.vaNvaChart">Répartition VA / NVA</h2>
                 <div class="chart-wrapper">
                     <canvas id="vaNvaChart"></canvas>
                 </div>
             </div>
             <div class="chart-section">
-                <h2>Répartition du temps par activité</h2>
+                <h2 data-i18n="resume.pieChart">Répartition du temps par activité</h2>
                 <div class="chart-wrapper">
                     <canvas id="pieChart"></canvas>
                 </div>
             </div>
 
             <div class="chart-section">
-                <h2>Temps moyen par activité</h2>
+                <h2 data-i18n="resume.barChart">Temps moyen par activité</h2>
                 <div class="chart-wrapper">
                     <canvas id="barChart"></canvas>
                 </div>
             </div>
 
             <div class="chart-section">
-                <h2>Distribution des temps (Courbe de Gauss)</h2>
+                <h2 data-i18n="resume.gaussChart">Distribution des temps (Courbe de Gauss)</h2>
                 <div class="chart-wrapper">
                     <canvas id="gaussChart"></canvas>
                 </div>
@@ -60,13 +63,23 @@
         </div>
 
         <div class="export-buttons">
-            <button id="exportExcelWithChartsButton" class="export-button" title="Exporter">Exporter</button>
+            <button id="exportExcelWithChartsButton" class="export-button" data-i18n-title="resume.exportTitle" title="Exporter" data-i18n="resume.export">Exporter</button>
         </div>
     </div>
 
+    <script src="../js/i18n.js"></script>
     <script src="../js/main.js"></script>
     <script src="../js/resume.js"></script>
     <script>if ('serviceWorker' in navigator) { navigator.serviceWorker.register('../js/service-worker.js'); }</script>
+    <script>
+        // Ajouter le sélecteur de langue
+        document.addEventListener('DOMContentLoaded', function() {
+            const container = document.getElementById('languageSelectorContainer');
+            if (container) {
+                container.appendChild(i18n.createLanguageSelector());
+            }
+        });
+    </script>
 </body>
 
 </html>

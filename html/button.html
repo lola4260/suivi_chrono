@@ -5,37 +5,40 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Suivi des Collaborateurs - Chronométrage</title>
+    <meta name="i18n-title" content="chrono.title">
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="../css/buttons.css">
+    <link rel="stylesheet" href="../css/language.css">
     <link rel="manifest" href="../manifest.json">
     <meta name="theme-color" content="#4CAF50">
 </head>
 
 <body>
+    <div id="languageSelectorContainer"></div>
     <div class="buttons-container">
         <div id="observation-info" class="observation-header">
         </div>
         <div id="chrono-display" class="chrono-section">
             <div class="chrono-display">00:00:00.00</div>
-            <div class="cycle-info">Cycles: <span id="cycleCount">0</span></div>
+            <div class="cycle-info"><span data-i18n="chrono.cycles">Cycles:</span> <span id="cycleCount">0</span></div>
             <div class="chrono-controls">
-                <button id="pauseBtn" class="pause-button">Pause</button>
-                <button id="cycleBtn" class="topcycle-button" title="Marquer la fin d'un cycle">Top cycle</button>
-                <button id="changeTaskBtn" class="change-task-button" title="Changer la tâche en cours">Changer de tâche</button>
-                <span class="cycle-badge" title="Durée du cycle en cours">Cycle: <span id="cycleElapsed">00:00.00</span></span>
+                <button id="pauseBtn" class="pause-button" data-i18n="chrono.pause">Pause</button>
+                <button id="cycleBtn" class="topcycle-button" data-i18n-title="chrono.topCycleTitle" title="Marquer la fin d'un cycle" data-i18n="chrono.topCycle">Top cycle</button>
+                <button id="changeTaskBtn" class="change-task-button" data-i18n-title="chrono.changeTaskTitle" title="Changer la tâche en cours" data-i18n="chrono.changeTask">Changer de tâche</button>
+                <span class="cycle-badge" data-i18n-title="chrono.cycleTitle" title="Durée du cycle en cours"><span data-i18n="chrono.cycle">Cycle:</span> <span id="cycleElapsed">00:00.00</span></span>
             </div>
             <div class="remark-controls">
-                <input id="remarkInput" type="text" placeholder="Ajouter une remarque…" maxlength="500" />
-                <button id="remarkSaveBtn" class="remark-button" title="Associer la remarque à la mesure en cours">Ajouter</button>
+                <input id="remarkInput" type="text" data-i18n="chrono.remarkPlaceholder" placeholder="Ajouter une remarque…" maxlength="500" />
+                <button id="remarkSaveBtn" class="remark-button" data-i18n-title="chrono.remarkAddTitle" title="Associer la remarque à la mesure en cours" data-i18n="chrono.remarkAdd">Ajouter</button>
             </div>
         </div>
         <div id="buttons-grid" class="buttons-grid">
         </div>
         <div class="end-session-container">
-            <button id="endSessionBtn" class="end-session-button">Terminer la session</button>
+            <button id="endSessionBtn" class="end-session-button" data-i18n="chrono.endSession">Terminer la session</button>
         </div>
         <div class="add-task-container">
-            <button id="addTaskBtn" class="add-task-button">Ajouter une nouvelle tâche</button>
+            <button id="addTaskBtn" class="add-task-button" data-i18n="chrono.addNewTask">Ajouter une nouvelle tâche</button>
         </div>
     </div>
 
@@ -50,23 +53,23 @@
     <div id="addTaskModal" class="modal">
         <div class="modal-content">
             <span class="close-modal">&times;</span>
-            <h2>Ajouter une nouvelle tâche</h2>
+            <h2 data-i18n="modal.addTask">Ajouter une nouvelle tâche</h2>
             <form id="addTaskForm">
                 <div class="form-group">
-                    <label for="taskTitle">Titre de la tâche :</label>
+                    <label for="taskTitle" data-i18n="modal.taskTitle">Titre de la tâche :</label>
                     <input type="text" id="taskTitle" required>
                 </div>
                 <div class="form-group">
-                    <label for="taskDescription">Description :</label>
+                    <label for="taskDescription" data-i18n="modal.description">Description :</label>
                     <textarea id="taskDescription" rows="3"></textarea>
                 </div>
                 <div class="form-group">
-                    <label for="taskColor">Couleur :</label>
+                    <label for="taskColor" data-i18n="modal.color">Couleur :</label>
                     <input type="color" id="taskColor" value="#3498db">
                 </div>
                 <div class="form-actions">
-                    <button type="submit" class="submit-btn">Ajouter</button>
-                    <button type="button" class="cancel-btn">Annuler</button>
+                    <button type="submit" class="submit-btn" data-i18n="modal.add">Ajouter</button>
+                    <button type="button" class="cancel-btn" data-i18n="modal.cancel">Annuler</button>
                 </div>
             </form>
         </div>
@@ -75,13 +78,14 @@
     <div id="changeTaskModal" class="modal">
         <div class="modal-content">
             <span class="close-modal">&times;</span>
-            <h2>Changer de tâche</h2>
-            <p>Sélectionnez la tâche correcte :</p>
+            <h2 data-i18n="modal.changeTask">Changer de tâche</h2>
+            <p data-i18n="modal.selectTask">Sélectionnez la tâche correcte :</p>
             <div id="changeTaskList" class="change-task-list">
             </div>
         </div>
     </div>
 
+    <script src="../js/i18n.js"></script>
     <script src="../js/main.js"></script>
     <script src="../js/modal.js"></script>
     <script src="../js/chrono.js"></script>
@@ -94,6 +98,14 @@
             modal.style.display = 'block';
             return false;
         };
+        
+        // Ajouter le sélecteur de langue
+        document.addEventListener('DOMContentLoaded', function() {
+            const container = document.getElementById('languageSelectorContainer');
+            if (container) {
+                container.appendChild(i18n.createLanguageSelector());
+            }
+        });
     </script>
 </body>
 
