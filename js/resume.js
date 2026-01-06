@@ -672,7 +672,7 @@ class SummaryPage {
 
   downloadBlankTemplateWorkbook() {
     if (typeof XLSX === "undefined") {
-      alert("Librairie XLSX non disponible.");
+      alert(i18n.t('export.xlsxNotAvailable'));
       return;
     }
 
@@ -726,15 +726,13 @@ class SummaryPage {
     XLSX.writeFile(wb, filename);
 
     setTimeout(() => {
-      alert(
-        "Template téléchargé. Ouvrez-le dans Excel, insérez vos graphiques qui pointent vers les plages nommées (ex: VA_NVA_DATA), puis enregistrez-le sous 'template_charts.xlsx' et placez-le dans assets/excel/ ou uploadez-le depuis la page."
-      );
+      alert(i18n.t('export.templateDownloaded'));
     }, 200);
   }
 
   async exportToExcelWithCharts() {
     if (typeof ExcelJS === "undefined") {
-      alert("ExcelJS non disponible. Vérifiez la connexion internet.");
+      alert(i18n.t('export.excelJsNotAvailable'));
       return;
     }
 
@@ -1051,7 +1049,7 @@ class SummaryPage {
 
   async exportToExcelWithNativeChartsTemplate() {
     if (typeof XlsxPopulate === "undefined") {
-      alert("XlsxPopulate non disponible. Vérifiez la connexion internet.");
+      alert(i18n.t('export.xlsxPopulateNotAvailable'));
       return;
     }
 
@@ -1062,18 +1060,14 @@ class SummaryPage {
       if (!res.ok) throw new Error(`Template non trouvé (${res.status})`);
       arrayBuffer = await res.arrayBuffer();
     } catch (e) {
-      alert(
-        "Template manquant. Ajoutez 'template_charts.xlsx' dans assets/excel/ puis réessayez."
-      );
+      alert(i18n.t('export.templateMissing'));
       return;
     }
 
     try {
       await this._buildAndDownloadNativeFromArrayBuffer(arrayBuffer);
     } catch (e) {
-      alert(
-        "Impossible de générer le fichier à partir du template. Vérifiez que les plages nommées existent et réessayez."
-      );
+      alert(i18n.t('export.templateGenerationError'));
     }
   }
 
@@ -1090,9 +1084,7 @@ class SummaryPage {
     const missing = requiredNames.filter((n) => !workbook.definedName(n));
     if (missing.length) {
       alert(
-        `Le template ne contient pas toutes les plages nommées requises:\n- ${missing.join(
-          "\n- "
-        )}`
+        i18n.t('export.missingNamedRanges').replace('{ranges}', missing.join('\n- '))
       );
       return;
     }

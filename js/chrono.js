@@ -35,7 +35,12 @@ class Chronometer {
         this.isPaused = false;
         this.isRunning = true;
         this.startTime = performance.now() - this.elapsedTime;
-        if (!this.cyclePerfStart) this.cyclePerfStart = performance.now();
+        // Ajuster cyclePerfStart pour continuer le cycle depuis la pause
+        if (this.cyclePerfStart) {
+          this.cyclePerfStart = performance.now() - this.currentCycleElapsed;
+        } else {
+          this.cyclePerfStart = performance.now();
+        }
 
         if (!this.displayElements.length) {
           this.cacheDisplayElements();
@@ -130,7 +135,9 @@ class Chronometer {
       this.isPaused = true;
       this.elapsedTime = performance.now() - this.startTime;
       this.lastCycleTimestamp = null;
-      // conserve currentCycleElapsed tel quel pour affichage figé
+      // Figer le temps de cycle à la valeur actuelle
+      const cycleStart = this.cyclePerfStart || this.startTime;
+      this.currentCycleElapsed = Math.max(0, performance.now() - cycleStart);
       this.updateCycleElapsedElement();
       this.updateButtonStyles();
       this.notifyRemarkControlsUpdate();

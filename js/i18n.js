@@ -150,6 +150,68 @@ const i18n = {
       'excel.durationSecond': 'Durée (seconde)',
       'excel.durationCmin': 'Durée (Cmin)',
       'excel.activity': 'Activité',
+      
+      // Messages d'alerte formulaire
+      'alert.fillAllFields': 'Veuillez remplir tous les champs obligatoires',
+      'alert.addAtLeastOneTask': 'Veuillez ajouter au moins une tâche',
+      'status.saved': 'Sauvegarde enregistrée',
+      'status.observationRestored': 'Informations d\'observation restaurées',
+      'status.tasksRestored': '{count} tâche(s) restaurée(s)',
+      'status.noSaveFound': 'Aucune sauvegarde trouvée',
+      'status.saveCleared': 'Sauvegarde effacée',
+      
+      // Messages d'export et templates
+      'export.xlsxNotAvailable': 'Librairie XLSX non disponible.',
+      'export.templateDownloaded': 'Template téléchargé. Ouvrez-le dans Excel, insérez vos graphiques qui pointent vers les plages nommées (ex: VA_NVA_DATA), puis enregistrez-le sous \'template_charts.xlsx\' et placez-le dans assets/excel/ ou uploadez-le depuis la page.',
+      'export.excelJsNotAvailable': 'ExcelJS non disponible. Vérifiez la connexion internet.',
+      'export.xlsxPopulateNotAvailable': 'XlsxPopulate non disponible. Vérifiez la connexion internet.',
+      'export.templateMissing': 'Template manquant. Ajoutez \'template_charts.xlsx\' dans assets/excel/ puis réessayez.',
+      'export.templateGenerationError': 'Impossible de générer le fichier à partir du template. Vérifiez que les plages nommées existent et réessayez.',
+      'export.missingNamedRanges': 'Le template ne contient pas toutes les plages nommées requises:\n- {ranges}',
+      
+      // Templates de tâches - Cariste
+      'preset.cariste.task1': 'Transport Emballage Plein',
+      'preset.cariste.task2': 'Transport Emballage Vide',
+      'preset.cariste.task3': 'Véhicule Vide - suite Véhicule plein',
+      'preset.cariste.task4': 'Activité Manuelle',
+      'preset.cariste.task5': 'Gerbage dégerbage',
+      'preset.cariste.task6': 'Véhicule Vide - Recherche',
+      'preset.cariste.task7': 'Depolution-Hygienage',
+      'preset.cariste.task8': 'Taches Admin',
+      'preset.cariste.task9': 'Chargement Engin',
+      'preset.cariste.task10': 'Attente',
+      'preset.cariste.task11': 'Aléas',
+      'preset.cariste.task12': 'Retour Zone',
+      
+      // Templates de tâches - Assemblage
+      'preset.assemblage.task1': 'Prise - Dépose',
+      'preset.assemblage.task2': 'Fixer',
+      'preset.assemblage.task3': 'Positionner - Ajuster',
+      'preset.assemblage.task4': 'Prise/Depose intermédiaire',
+      'preset.assemblage.task5': 'Marcher',
+      'preset.assemblage.task6': 'Lire - Ecrire',
+      'preset.assemblage.task7': 'Retoucher',
+      'preset.assemblage.task8': 'Contrôler',
+      'preset.assemblage.task9': 'Attendre',
+      'preset.assemblage.task10': 'Aléas',
+      
+      // Templates de tâches - Picking
+      'preset.picking.task1': 'Pickage',
+      'preset.picking.task2': 'Manutention Chariot',
+      'preset.picking.task3': 'Depolution-Hygienage',
+      'preset.picking.task4': 'Taches Admin',
+      'preset.picking.task5': 'Prépa pièces',
+      'preset.picking.task6': 'Attendre',
+      'preset.picking.task7': 'Aléas',
+      
+      // Templates de tâches - Chafab
+      'preset.chafab.task1': 'Préparation Temps masqué',
+      'preset.chafab.task2': 'Déplacement',
+      'preset.chafab.task3': 'Temps actif',
+      'preset.chafab.task4': 'Taches Admin',
+      'preset.chafab.task5': 'Prépa pièces',
+      'preset.chafab.task6': 'Attendre',
+      'preset.chafab.task7': 'Aléas',
     },
     
     en: {
@@ -168,7 +230,7 @@ const i18n = {
       'form.preset.cariste': 'Forklift Operator',
       'form.preset.assemblage': 'Assembly',
       'form.preset.picking': 'Picking/Kitting',
-      'form.preset.chafab': 'Chafab',
+      'form.preset.chafab': 'SMED',
       'form.addManually': 'Add a task manually',
       'form.taskTitle': 'Activity Name:',
       'form.taskDescription': 'Activity Description:',
@@ -299,6 +361,68 @@ const i18n = {
       'excel.durationSecond': 'Duration (second)',
       'excel.durationCmin': 'Duration (Cmin)',
       'excel.activity': 'Activity',
+      
+      // Form alert messages
+      'alert.fillAllFields': 'Please fill in all required fields',
+      'alert.addAtLeastOneTask': 'Please add at least one task',
+      'status.saved': 'Saved successfully',
+      'status.observationRestored': 'Observation information restored',
+      'status.tasksRestored': '{count} task(s) restored',
+      'status.noSaveFound': 'No saved data found',
+      'status.saveCleared': 'Save cleared',
+      
+      // Export and template messages
+      'export.xlsxNotAvailable': 'XLSX library not available.',
+      'export.templateDownloaded': 'Template downloaded. Open it in Excel, insert your charts pointing to named ranges (e.g., VA_NVA_DATA), then save it as \'template_charts.xlsx\' and place it in assets/excel/ or upload it from the page.',
+      'export.excelJsNotAvailable': 'ExcelJS not available. Check internet connection.',
+      'export.xlsxPopulateNotAvailable': 'XlsxPopulate not available. Check internet connection.',
+      'export.templateMissing': 'Template missing. Add \'template_charts.xlsx\' to assets/excel/ then try again.',
+      'export.templateGenerationError': 'Unable to generate file from template. Verify that named ranges exist and try again.',
+      'export.missingNamedRanges': 'The template does not contain all required named ranges:\n- {ranges}',
+      
+      // Task Templates - Forklift Operator
+      'preset.cariste.task1': 'Full Packaging Transport',
+      'preset.cariste.task2': 'Empty Packaging Transport',
+      'preset.cariste.task3': 'Empty Vehicle - after Full Vehicle',
+      'preset.cariste.task4': 'Manual Activity',
+      'preset.cariste.task5': 'Stacking/Unstacking',
+      'preset.cariste.task6': 'Empty Vehicle - Search',
+      'preset.cariste.task7': 'Depollution-Cleaning',
+      'preset.cariste.task8': 'Admin Tasks',
+      'preset.cariste.task9': 'Equipment Loading',
+      'preset.cariste.task10': 'Waiting',
+      'preset.cariste.task11': 'Disruptions',
+      'preset.cariste.task12': 'Return to Zone',
+      
+      // Task Templates - Assembly
+      'preset.assemblage.task1': 'Pick - Place',
+      'preset.assemblage.task2': 'Fix',
+      'preset.assemblage.task3': 'Position - Adjust',
+      'preset.assemblage.task4': 'Intermediate Pick/Place',
+      'preset.assemblage.task5': 'Walk',
+      'preset.assemblage.task6': 'Read - Write',
+      'preset.assemblage.task7': 'Rework',
+      'preset.assemblage.task8': 'Check',
+      'preset.assemblage.task9': 'Wait',
+      'preset.assemblage.task10': 'Disruptions',
+      
+      // Task Templates - Picking
+      'preset.picking.task1': 'Picking',
+      'preset.picking.task2': 'Cart Handling',
+      'preset.picking.task3': 'Depollution-Cleaning',
+      'preset.picking.task4': 'Admin Tasks',
+      'preset.picking.task5': 'Parts Preparation',
+      'preset.picking.task6': 'Wait',
+      'preset.picking.task7': 'Disruptions',
+      
+      // Task Templates - Chafab
+      'preset.chafab.task1': 'Internal Preparation',
+      'preset.chafab.task2': 'Movement',
+      'preset.chafab.task3': 'Active Time',
+      'preset.chafab.task4': 'Admin Tasks',
+      'preset.chafab.task5': 'Parts Preparation',
+      'preset.chafab.task6': 'Wait',
+      'preset.chafab.task7': 'Disruptions',
     }
   },
   

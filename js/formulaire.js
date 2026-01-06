@@ -15,48 +15,48 @@ class TaskForm {
     this.tasks = [];
     this.taskPresets = {
       cariste: [
-        { title: "Trans Emb Plein", description: "" },
-        { title: "Trans Emb Vide", description: "" },
-        { title: "Véh Vide - suite Véh plein", description: "" },
-        { title: "act Man", description: "" },
-        { title: "gerb. dégerb", description: "" },
-        { title: "Véh Vide - Recherche", description: "" },
-        { title: "Depol-Hygien.", description: "" },
-        { title: "Taches Admin", description: "" },
-        { title: "Chgt Engin", description: "" },
-        { title: "Attente", description: "" },
-        { title: "Aléas", description: "" },
-        { title: "Retour Zone", description: "" },
+        { title: "preset.cariste.task1", description: "" },
+        { title: "preset.cariste.task2", description: "" },
+        { title: "preset.cariste.task3", description: "" },
+        { title: "preset.cariste.task4", description: "" },
+        { title: "preset.cariste.task5", description: "" },
+        { title: "preset.cariste.task6", description: "" },
+        { title: "preset.cariste.task7", description: "" },
+        { title: "preset.cariste.task8", description: "" },
+        { title: "preset.cariste.task9", description: "" },
+        { title: "preset.cariste.task10", description: "" },
+        { title: "preset.cariste.task11", description: "" },
+        { title: "preset.cariste.task12", description: "" },
       ],
       assemblage: [
-        { title: "Prise - Dépose", description: "" },
-        { title: "Fixer", description: "" },
-        { title: "Positionner - Ajuster", description: "" },
-        { title: "Prise/Dep inter", description: "" },
-        { title: "Marcher", description: "" },
-        { title: "Lire - Ecrire", description: "" },
-        { title: "Retoucher", description: "" },
-        { title: "Contrôler", description: "" },
-        { title: "Attendre", description: "" },
-        { title: "Aléas", description: "" },
+        { title: "preset.assemblage.task1", description: "" },
+        { title: "preset.assemblage.task2", description: "" },
+        { title: "preset.assemblage.task3", description: "" },
+        { title: "preset.assemblage.task4", description: "" },
+        { title: "preset.assemblage.task5", description: "" },
+        { title: "preset.assemblage.task6", description: "" },
+        { title: "preset.assemblage.task7", description: "" },
+        { title: "preset.assemblage.task8", description: "" },
+        { title: "preset.assemblage.task9", description: "" },
+        { title: "preset.assemblage.task10", description: "" },
       ],
       picking: [
-        { title: "Pickage", description: "" },
-        { title: "Manut Chariot", description: "" },
-        { title: "Depol-Hygien.", description: "" },
-        { title: "Taches Admin", description: "" },
-        { title: "Prépa pièces", description: "" },
-        { title: "Attendre", description: "" },
-        { title: "Aléas", description: "" },
+        { title: "preset.picking.task1", description: "" },
+        { title: "preset.picking.task2", description: "" },
+        { title: "preset.picking.task3", description: "" },
+        { title: "preset.picking.task4", description: "" },
+        { title: "preset.picking.task5", description: "" },
+        { title: "preset.picking.task6", description: "" },
+        { title: "preset.picking.task7", description: "" },
       ],
       chafab: [
-        { title: "prepa Tmasqu", description: "" },
-        { title: "dplct", description: "" },
-        { title: "Temps actif", description: "" },
-        { title: "Taches Admin", description: "" },
-        { title: "Prépa pièces", description: "" },
-        { title: "Attendre", description: "" },
-        { title: "Aléas", description: "" },
+        { title: "preset.chafab.task1", description: "" },
+        { title: "preset.chafab.task2", description: "" },
+        { title: "preset.chafab.task3", description: "" },
+        { title: "preset.chafab.task4", description: "" },
+        { title: "preset.chafab.task5", description: "" },
+        { title: "preset.chafab.task6", description: "" },
+        { title: "preset.chafab.task7", description: "" },
       ],
     };
     this.initializeElements();
@@ -271,12 +271,12 @@ class TaskForm {
       this.tasks = [];
     }
 
-    // Add all preset tasks
+    // Add all preset tasks with translations
     preset.forEach((taskData, index) => {
       const color = this.defaultColors[index % this.defaultColors.length];
       const task = {
         id: Date.now() + index,
-        title: taskData.title,
+        title: i18n.t(taskData.title), // Traduire le titre
         description: taskData.description,
         color: color,
       };
@@ -397,12 +397,12 @@ class TaskForm {
       !observationInfo.examinerName ||
       !observationInfo.examDate
     ) {
-      alert("Veuillez remplir tous les champs obligatoires");
+      alert(i18n.t('alert.fillAllFields'));
       return;
     }
 
     if (this.tasks.length === 0) {
-      alert("Veuillez ajouter au moins une tâche");
+      alert(i18n.t('alert.addAtLeastOneTask'));
       return;
     }
 
@@ -422,7 +422,7 @@ class TaskForm {
         observationInfo
       );
       console.log("[TaskForm] saveToStorage - tasks:", this.tasks);
-      this.showStatus("Sauvegarde enregistrée");
+      this.showStatus(i18n.t('status.saved'));
     } catch (err) {
       console.error("Erreur lors de la sauvegarde :", err);
     }
@@ -439,7 +439,7 @@ class TaskForm {
       if (obs) {
         this.restoreObservationInfo(obs);
         restoredAnything = true;
-        this.showStatus("Informations d'observation restaurées");
+        this.showStatus(i18n.t('status.observationRestored'));
       }
 
       let normalizedTasks = null;
@@ -477,13 +477,13 @@ class TaskForm {
         });
 
         restoredAnything = restoredAnything || this.tasks.length > 0;
-        this.showStatus(`${this.tasks.length} tâche(s) restaurée(s)`);
+        this.showStatus(i18n.t('status.tasksRestored').replace('{count}', this.tasks.length));
         if (typeof this.updateSuggestedColor === "function")
           this.updateSuggestedColor();
       }
 
       if (!restoredAnything) {
-        this.showStatus("Aucune sauvegarde trouvée");
+        this.showStatus(i18n.t('status.noSaveFound'));
       }
     } catch (err) {
       console.error("Erreur lors du chargement de la sauvegarde :", err);
@@ -494,7 +494,7 @@ class TaskForm {
     try {
       Storage.remove("observationInfo");
       Storage.remove("tasks");
-      this.showStatus("Sauvegarde effacée");
+      this.showStatus(i18n.t('status.saveCleared'));
     } catch (err) {
       console.error("Erreur lors de l'effacement de la sauvegarde :", err);
     }
